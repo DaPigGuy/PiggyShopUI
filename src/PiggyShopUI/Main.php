@@ -104,6 +104,10 @@ class Main extends PluginBase
         if ($formapi instanceof FormAPI && $formapi->isEnabled()) {
             $form = $formapi->createSimpleForm(function (Player $player, ?int $data) use ($categoryName) {
                 if (!is_null($data)) {
+                    if ($data >= count($this->buyCategories)) {
+                        $this->openBuyMainMenu($player);
+                        return;
+                    }
                     $this->openBuyItemMenu($player, $this->buyCategories[$categoryName]["items"][array_keys($this->buyCategories[$categoryName]["items"])[$data]]);
                 }
             });
@@ -111,6 +115,7 @@ class Main extends PluginBase
             foreach ($this->buyCategories[$categoryName]["items"] as $menuName => $itemData) {
                 $form->addButton($menuName, (isset($itemData["image-type"]) ? (int)$itemData["image-type"] : -1), (isset($itemData["image"]) ? $itemData["image"] : ""));
             }
+            $form->addButton($this->getConfig()->getNested("messages.back-button"));
             $form->sendToPlayer($player);
         }
     }
@@ -200,6 +205,10 @@ class Main extends PluginBase
         if ($formapi instanceof FormAPI && $formapi->isEnabled()) {
             $form = $formapi->createSimpleForm(function (Player $player, ?int $data) use ($categoryName) {
                 if (!is_null($data)) {
+                    if ($data >= count($this->buyCategories)) {
+                        $this->openSellMainMenu($player);
+                        return;
+                    }
                     $this->openSellItemMenu($player, $this->sellCategories[$categoryName]["items"][array_keys($this->sellCategories[$categoryName]["items"])[$data]]);
                 }
             });
@@ -207,6 +216,7 @@ class Main extends PluginBase
             foreach ($this->sellCategories[$categoryName]["items"] as $menuName => $itemData) {
                 $form->addButton($menuName, (isset($itemData["image-type"]) ? (int)$itemData["image-type"] : -1), (isset($itemData["image"]) ? $itemData["image"] : ""));
             }
+            $form->addButton($this->getConfig()->getNested("messages.back-button"));
             $form->sendToPlayer($player);
         }
     }

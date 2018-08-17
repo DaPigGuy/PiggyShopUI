@@ -105,3 +105,4 @@ messages:
   sell-item-confirmation: "Are you sure you would like to sell {COUNT}x {ITEM} for ${PRICE}."
   missing-items: "You do not have {COUNT}x {ITEM}."
   successfully-sold-item: "You have successfully sold {COUNT}x {ITEM} for ${PRICE}."
+  back-button: "Back"

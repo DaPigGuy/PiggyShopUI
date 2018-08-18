@@ -163,6 +163,7 @@ class Main extends PluginBase
                             $economyapi->reduceMoney($player, $cost);
                             $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$count, $itemData["menu-name"], $cost], $this->getConfig()->getNested("messages.successfully-bought-item")));
                             $player->getInventory()->addItem(Item::get((int)$itemData["id"], isset($itemData["damage"]) ? (int)$itemData["damage"] : 0, $count));
+                            $this->openBuyMainMenu($player);
                         }
                     }
                 }
@@ -263,6 +264,7 @@ class Main extends PluginBase
                             $economyapi->addMoney($player, $paid);
                             $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$count, $itemData["menu-name"], $paid], $this->getConfig()->getNested("messages.successfully-sold-item")));
                             $player->getInventory()->removeItem(Item::get((int)$itemData["id"], isset($itemData["damage"]) ? (int)$itemData["damage"] : 0, $count));
+                            $this->openSellMainMenu($player);
                         }
                     }
                 }

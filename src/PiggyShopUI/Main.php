@@ -104,7 +104,7 @@ class Main extends PluginBase
         if ($formapi instanceof FormAPI && $formapi->isEnabled()) {
             $form = $formapi->createSimpleForm(function (Player $player, ?int $data) use ($categoryName) {
                 if (!is_null($data)) {
-                    if ($data >= count($this->buyCategories)) {
+                    if ($data >= count($this->buyCategories[$categoryName]["items"])) {
                         $this->openBuyMainMenu($player);
                         return;
                     }
@@ -206,7 +206,7 @@ class Main extends PluginBase
         if ($formapi instanceof FormAPI && $formapi->isEnabled()) {
             $form = $formapi->createSimpleForm(function (Player $player, ?int $data) use ($categoryName) {
                 if (!is_null($data)) {
-                    if ($data >= count($this->buyCategories)) {
+                    if ($data >= count($this->sellCategories[$categoryName]["items"])) {
                         $this->openSellMainMenu($player);
                         return;
                     }

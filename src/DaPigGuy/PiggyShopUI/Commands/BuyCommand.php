@@ -3,7 +3,6 @@
 namespace DaPigGuy\PiggyShopUI\Commands;
 
 use DaPigGuy\PiggyShopUI\Main;
-use jojoe77777\FormAPI\FormAPI;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\Player;
@@ -38,24 +37,20 @@ class BuyCommand extends PluginCommand
     {
         $plugin = $this->getPlugin();
         if ($plugin instanceof Main) {
-            $formapi = $plugin->getServer()->getPluginManager()->getPlugin("FormAPI");
-            if ($formapi instanceof FormAPI && $formapi->isEnabled()) {
-                if ($sender instanceof Player) {
-                    if (isset($args[0])) {
-                        if (isset($plugin->buyCategories[$args[0]])) {
-                            $plugin->openBuyCategoryMenu($sender, $args[0]);
-                            return;
-                        }
-                        $sender->sendMessage(TextFormat::RED . "Invalid category.");
+            if ($sender instanceof Player) {
+                if (isset($args[0])) {
+                    if (isset($plugin->buyCategories[$args[0]])) {
+                        $plugin->openBuyCategoryMenu($sender, $args[0]);
                         return;
                     }
-                    $plugin->openBuyMainMenu($sender);
+                    $sender->sendMessage(TextFormat::RED . "Invalid category.");
                     return;
                 }
-                $sender->sendMessage(TextFormat::RED . "Please use this in-game.");
+                $plugin->openBuyMainMenu($sender);
                 return;
             }
-            $sender->sendMessage(TextFormat::RED . "FormAPI is required.");
+            $sender->sendMessage(TextFormat::RED . "Please use this in-game.");
+            return;
         }
     }
 }

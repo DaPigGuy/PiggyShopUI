@@ -80,7 +80,7 @@ class Main extends PluginBase
         foreach ($this->buyCategories as $name => $category) {
             $form->addButton($name, (isset($category["image-type"]) ? (int)$category["image-type"] : -1), (isset($category["image"]) ? $category["image"] : ""));
         }
-        $form->sendToPlayer($player);
+        $player->sendForm($form);
     }
 
     /**
@@ -103,7 +103,7 @@ class Main extends PluginBase
             $form->addButton($menuName, (isset($itemData["image-type"]) ? (int)$itemData["image-type"] : -1), (isset($itemData["image"]) ? $itemData["image"] : ""));
         }
         $form->addButton($this->getConfig()->getNested("messages.back-button"));
-        $form->sendToPlayer($player);
+        $player->sendForm($form);
     }
 
     /**
@@ -120,7 +120,7 @@ class Main extends PluginBase
         $form->setTitle(str_replace("{ITEM}", $itemData["menu-name"], $this->getConfig()->getNested("buy-item-menu-title")));
         $form->addLabel(str_replace(["{ITEM}", "{PRICE}"], [$itemData["menu-name"], $itemData["price"]], $this->getConfig()->getNested("messages.buy-item-information")));
         $form->addInput("Count", 1, 1);
-        $form->sendToPlayer($player);
+        $player->sendForm($form);
     }
 
     /**
@@ -153,7 +153,7 @@ class Main extends PluginBase
         $form->setContent(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$count, $itemData["menu-name"], $itemData["price"] * $count], $this->getConfig()->getNested("messages.buy-item-confirmation")));
         $form->setButton1("Confirm");
         $form->setButton2("Cancel");
-        $form->sendToPlayer($player);
+        $player->sendForm($form);
     }
 
     /**
@@ -170,7 +170,7 @@ class Main extends PluginBase
         foreach ($this->sellCategories as $name => $category) {
             $form->addButton($name, (isset($category["image-type"]) ? (int)$category["image-type"] : -1), (isset($category["image"]) ? $category["image"] : ""));
         }
-        $form->sendToPlayer($player);
+        $player->sendForm($form);
     }
 
     /**
@@ -193,7 +193,7 @@ class Main extends PluginBase
             $form->addButton($menuName, (isset($itemData["image-type"]) ? (int)$itemData["image-type"] : -1), (isset($itemData["image"]) ? $itemData["image"] : ""));
         }
         $form->addButton($this->getConfig()->getNested("messages.back-button"));
-        $form->sendToPlayer($player);
+        $player->sendForm($form);
     }
 
     /**
@@ -202,15 +202,15 @@ class Main extends PluginBase
      */
     public function openSellItemMenu(Player $player, array $itemData)
     {
-            $form = new CustomForm(function (Player $player, ?array $data) use ($itemData) {
-                if (!is_null($data) && isset($data[1])) {
-                    $this->openSellItemConfirmationMenu($player, $itemData, (int)$data[1]);
-                }
-            });
-            $form->setTitle(str_replace("{ITEM}", $itemData["menu-name"], $this->getConfig()->getNested("sell-item-menu-title")));
-            $form->addLabel(str_replace(["{ITEM}", "{PRICE}"], [$itemData["menu-name"], $itemData["price"]], $this->getConfig()->getNested("messages.sell-item-information")));
-            $form->addInput("Count", 1, 1);
-            $form->sendToPlayer($player);
+        $form = new CustomForm(function (Player $player, ?array $data) use ($itemData) {
+            if (!is_null($data) && isset($data[1])) {
+                $this->openSellItemConfirmationMenu($player, $itemData, (int)$data[1]);
+            }
+        });
+        $form->setTitle(str_replace("{ITEM}", $itemData["menu-name"], $this->getConfig()->getNested("sell-item-menu-title")));
+        $form->addLabel(str_replace(["{ITEM}", "{PRICE}"], [$itemData["menu-name"], $itemData["price"]], $this->getConfig()->getNested("messages.sell-item-information")));
+        $form->addInput("Count", 1, 1);
+        $player->sendForm($form);
     }
 
     /**
@@ -220,28 +220,28 @@ class Main extends PluginBase
      */
     public function openSellItemConfirmationMenu(Player $player, array $itemData, int $count)
     {
-            $form = new ModalForm(function (Player $player, ?bool $data) use ($itemData, $count) {
-                if (!is_null($data)) {
-                    if ($data) {
-                        $economyapi = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
-                        if ($economyapi instanceof EconomyAPI && $economyapi->isEnabled()) {
-                            $paid = $itemData["price"] * $count;
-                            if (!$player->getInventory()->contains(Item::get((int)$itemData["id"], isset($itemData["damage"]) ? (int)$itemData["damage"] : 0, $count))) {
-                                $player->sendMessage(str_replace(["{COUNT}", "{ITEM}"], [$count, $itemData["menu-name"]], $this->getConfig()->getNested("messages.missing-items")));
-                                return;
-                            }
-                            $economyapi->addMoney($player, $paid);
-                            $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$count, $itemData["menu-name"], $paid], $this->getConfig()->getNested("messages.successfully-sold-item")));
-                            $player->getInventory()->removeItem(Item::get((int)$itemData["id"], isset($itemData["damage"]) ? (int)$itemData["damage"] : 0, $count));
-                            $this->openSellMainMenu($player);
+        $form = new ModalForm(function (Player $player, ?bool $data) use ($itemData, $count) {
+            if (!is_null($data)) {
+                if ($data) {
+                    $economyapi = $this->getServer()->getPluginManager()->getPlugin("EconomyAPI");
+                    if ($economyapi instanceof EconomyAPI && $economyapi->isEnabled()) {
+                        $paid = $itemData["price"] * $count;
+                        if (!$player->getInventory()->contains(Item::get((int)$itemData["id"], isset($itemData["damage"]) ? (int)$itemData["damage"] : 0, $count))) {
+                            $player->sendMessage(str_replace(["{COUNT}", "{ITEM}"], [$count, $itemData["menu-name"]], $this->getConfig()->getNested("messages.missing-items")));
+                            return;
                         }
+                        $economyapi->addMoney($player, $paid);
+                        $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$count, $itemData["menu-name"], $paid], $this->getConfig()->getNested("messages.successfully-sold-item")));
+                        $player->getInventory()->removeItem(Item::get((int)$itemData["id"], isset($itemData["damage"]) ? (int)$itemData["damage"] : 0, $count));
+                        $this->openSellMainMenu($player);
                     }
                 }
-            });
-            $form->setTitle($this->getConfig()->getNested("sell-item-confirm-menu-title"));
-            $form->setContent(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$count, $itemData["menu-name"], $itemData["price"] * $count], $this->getConfig()->getNested("messages.sell-item-confirmation")));
-            $form->setButton1("Confirm");
-            $form->setButton2("Cancel");
-            $form->sendToPlayer($player);
-        }
+            }
+        });
+        $form->setTitle($this->getConfig()->getNested("sell-item-confirm-menu-title"));
+        $form->setContent(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$count, $itemData["menu-name"], $itemData["price"] * $count], $this->getConfig()->getNested("messages.sell-item-confirmation")));
+        $form->setButton1("Confirm");
+        $form->setButton2("Cancel");
+        $player->sendForm($form);
+    }
 }

@@ -80,16 +80,12 @@ class EditSubCommand extends BaseSubCommand
                     $player->sendMessage(TextFormat::RED . "A shop category already exists with the name " . $data[0] . ".");
                     return;
                 }
-                $this->plugin->addShopCategory(new ShopCategory($data[0], $data[2] === 0 ? [] : [$items[$data[2]]], $data[3]));
+                $this->plugin->addShopCategory(new ShopCategory($data[0], [], $data[1]));
                 $player->sendMessage(TextFormat::GREEN . "Shop category " . $data[0] . " created successfully.");
             }
         });
         $form->setTitle("Add Shop Category");
         $form->addInput("Name");
-        $form->addLabel("Adding an item now is optional. It can be done later.");
-        $form->addDropdown("Item", array_merge(["None"], array_map(function (Item $item): string {
-            return $item->getName();
-        }, $items)));
         $form->addToggle("Private", false);
         $player->sendForm($form);
     }

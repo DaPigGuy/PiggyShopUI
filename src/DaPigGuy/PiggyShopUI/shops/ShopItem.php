@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DaPigGuy\PiggyShopUI\shops;
 
+use DaPigGuy\PiggyShopUI\PiggyShopUI;
 use pocketmine\item\Item;
 
 /**
@@ -45,14 +46,6 @@ class ShopItem
     }
 
     /**
-     * @param Item $item
-     */
-    public function setItem(Item $item): void
-    {
-        $this->item = $item;
-    }
-
-    /**
      * @return int
      */
     public function getBuyPrice(): int
@@ -66,12 +59,13 @@ class ShopItem
     public function setBuyPrice(int $buyPrice): void
     {
         $this->buyPrice = $buyPrice;
+        PiggyShopUI::getInstance()->saveToShopConfig();
     }
 
     /**
      * @return bool
      */
-    public function isCanSell(): bool
+    public function canSell(): bool
     {
         return $this->canSell;
     }
@@ -82,6 +76,7 @@ class ShopItem
     public function setCanSell(bool $canSell): void
     {
         $this->canSell = $canSell;
+        PiggyShopUI::getInstance()->saveToShopConfig();
     }
 
     /**
@@ -98,6 +93,7 @@ class ShopItem
     public function setSellPrice(int $sellPrice): void
     {
         $this->sellPrice = $sellPrice;
+        PiggyShopUI::getInstance()->saveToShopConfig();
     }
 
     /**

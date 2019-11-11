@@ -2,6 +2,7 @@
 
 namespace DaPigGuy\PiggyShopUI;
 
+use DaPigGuy\PiggyShopUI\commands\ShopCommand;
 use DaPigGuy\PiggyShopUI\economy\EconomyProvider;
 use DaPigGuy\PiggyShopUI\economy\EconomySProvider;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
@@ -9,6 +10,7 @@ use DaPigGuy\PiggyShopUI\shops\ShopItem;
 use pocketmine\item\Item;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
+use pocketmine\utils\TextFormat;
 
 /**
  * Class PiggyShopUI
@@ -46,11 +48,24 @@ class PiggyShopUI extends PluginBase
         }
 
         $this->shopConfig = new Config($this->getDataFolder() . "shops.yml");
-        foreach ($this->shopCategories as $category) {
-            $categoryObject = new ShopCategory($category["name"], array_map(function (array $item) {
-                return new ShopItem(Item::jsonDeserialize($item["item"]), $item["buyPrice"], $item["canSell"], $item["sellPrice"]);
+        foreach ($this->shopConfig->getAll() as $category) {
+            $this->shopCategories[$category["name"]] = new ShopCategory($category["name"], array_map(function (array $item) {
+                return new ShopItem(Item::jsonDeserialize($item["item"]), $item["description"], $item["buyPrice"], $item["canSell"], $item["sellPrice"]);
             }, $category["items"]), $category["private"]);
         }
+
+        $this->getServer()->getCommandMap()->register("piggyshopui", new ShopCommand($this, "shop", "Open the shop menu"));
+
+        if (!isset($this->shopCategories["test"])) {
+            $category = new ShopCategory("test", [], false);
+            $this->shopCategories["test"] = $category;
+            $category->addItem(new ShopItem(Item::get(Item::PORKCHOP, 0, 1)->setCustomName(TextFormat::RESET . "Mystical Porkchop"), "It's a porkchop", 1000, false, 0));
+        }
+    }
+
+    public function onDisable(): void
+    {
+        $this->saveToShopConfig();
     }
 
     /**
@@ -75,6 +90,23 @@ class PiggyShopUI extends PluginBase
             return $category->serialize();
         }, $this->shopCategories));
         $this->shopConfig->save();
+    }
+
+    /**
+     * @param string $name
+     * @return ShopCategory|null
+     */
+    public function getShopCategory(string $name): ?ShopCategory
+    {
+        return $this->shopCategories[$name] ?? null;
+    }
+
+    /**
+     * @return ShopCategory[]
+     */
+    public function getShopCategories(): array
+    {
+        return $this->shopCategories;
     }
 
     /**

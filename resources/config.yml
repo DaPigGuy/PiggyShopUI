@@ -1,3 +1,12 @@
 economy:
   provider: EconomyS
   format: "${amount}"
+messages:
+  menu:
+    main-title: "PiggyShopUI Shop"
+    category-button: "{CATEGORY}"
+    category-page-title: "PiggyShopUI Shop - {CATEGORY}"
+    item-button: "{COUNT}x {ITEM}"
+    item-page-title: "{COUNT}x {ITEM}"
+    item-purchase-price: "Purchase Price: {PRICE}"
+    item-sell-price: "Sell Price: {PRICE}"

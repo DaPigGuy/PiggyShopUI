@@ -15,6 +15,8 @@ class ShopItem
 {
     /** @var Item */
     public $item;
+    /** @var string */
+    private $description;
     /** @var int */
     public $buyPrice;
     /** @var bool */
@@ -25,13 +27,15 @@ class ShopItem
     /**
      * ShopItem constructor.
      * @param Item $item
+     * @param string $description
      * @param int $buyPrice
      * @param bool $canSell
      * @param int $sellPrice
      */
-    public function __construct(Item $item, int $buyPrice, bool $canSell, int $sellPrice)
+    public function __construct(Item $item, string $description, int $buyPrice, bool $canSell, int $sellPrice)
     {
         $this->item = $item;
+        $this->description = $description;
         $this->buyPrice = $buyPrice;
         $this->canSell = $canSell;
         $this->sellPrice = $sellPrice;
@@ -43,6 +47,23 @@ class ShopItem
     public function getItem(): Item
     {
         return $this->item;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+        PiggyShopUI::getInstance()->saveToShopConfig();
     }
 
     /**
@@ -101,6 +122,6 @@ class ShopItem
      */
     public function serialize(): array
     {
-        return ["item" => $this->item->jsonSerialize(), "buyPrice" => $this->buyPrice, "canSell" => $this->canSell, "sellPrice" => $this->sellPrice];
+        return ["item" => $this->item->jsonSerialize(), "description" => $this->description, "buyPrice" => $this->buyPrice, "canSell" => $this->canSell, "sellPrice" => $this->sellPrice];
     }
 }

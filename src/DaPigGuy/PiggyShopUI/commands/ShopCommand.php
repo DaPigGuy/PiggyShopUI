@@ -7,7 +7,9 @@ namespace DaPigGuy\PiggyShopUI\commands;
 use CortexPE\Commando\args\BaseArgument;
 use CortexPE\Commando\BaseCommand;
 use CortexPE\Commando\exception\ArgumentOrderException;
+use CortexPE\Commando\exception\SubCommandCollision;
 use DaPigGuy\PiggyShopUI\commands\enum\ShopCategoryEnum;
+use DaPigGuy\PiggyShopUI\commands\subcommands\EditSubCommand;
 use DaPigGuy\PiggyShopUI\PiggyShopUI;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
 use DaPigGuy\PiggyShopUI\shops\ShopItem;
@@ -162,11 +164,13 @@ class ShopCommand extends BaseCommand
     }
 
     /**
+     * @throws SubCommandCollision
      * @throws ArgumentOrderException
      */
     protected function prepare(): void
     {
         $this->setPermission("piggyshopui.command.shop");
+        $this->registerSubCommand(new EditSubCommand($this->plugin, "edit", "Edit shop categories"));
         $this->registerArgument(0, new ShopCategoryEnum("category", true));
     }
 }

@@ -10,7 +10,6 @@ use DaPigGuy\PiggyShopUI\shops\ShopItem;
 use pocketmine\item\Item;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
-use pocketmine\utils\TextFormat;
 
 /**
  * Class PiggyShopUI
@@ -55,12 +54,6 @@ class PiggyShopUI extends PluginBase
         }
 
         $this->getServer()->getCommandMap()->register("piggyshopui", new ShopCommand($this, "shop", "Open the shop menu"));
-
-        if (!isset($this->shopCategories["test"])) {
-            $category = new ShopCategory("test", [], false);
-            $this->shopCategories["test"] = $category;
-            $category->addItem(new ShopItem(Item::get(Item::PORKCHOP, 0, 1)->setCustomName(TextFormat::RESET . "Mystical Porkchop"), "It's a porkchop", 1000, false, 0));
-        }
     }
 
     public function onDisable(): void
@@ -91,6 +84,25 @@ class PiggyShopUI extends PluginBase
         }, $this->shopCategories));
         $this->shopConfig->save();
     }
+
+    /**
+     * @param ShopCategory $category
+     */
+    public function addShopCategory(ShopCategory $category): void
+    {
+        $this->shopCategories[$category->getName()] = $category;
+        $this->saveToShopConfig();
+    }
+
+    /**
+     * @param ShopCategory $category
+     */
+    public function removeShopCategory(ShopCategory $category): void
+    {
+        unset($this->shopCategories[$category->getName()]);
+        $this->saveToShopConfig();
+    }
+
 
     /**
      * @param string $name

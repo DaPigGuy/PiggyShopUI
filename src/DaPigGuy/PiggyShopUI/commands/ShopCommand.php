@@ -14,6 +14,7 @@ use DaPigGuy\PiggyShopUI\shops\ShopItem;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\command\CommandSender;
+use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
@@ -121,16 +122,31 @@ class ShopCommand extends BaseCommand
                         return;
                     }
                     $player->getInventory()->addItem($purchasedItem);
-                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}"], [$purchasedItem->getCount(), $purchasedItem->getName()], $this->plugin->getConfig()->getNested("messages.buy.buy-success")));
+                    $this->plugin->getEconomyProvider()->takeMoney($player, $item->getBuyPrice() * $data[1]);
+                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$purchasedItem->getCount(), $purchasedItem->getName(), $item->getBuyPrice() * $data[1]], $this->plugin->getConfig()->getNested("messages.buy.buy-success")));
                 } else {
-                    //TODO: handle selling
+                    $offeredItems = clone $item->getItem();
+                    $offeredItems->setCount($offeredItems->getCount() * $data[1]);
+                    if (!$player->getInventory()->contains($offeredItems)) {
+                        $total = 0;
+                        /** @var Item $i */
+                        foreach ($player->getInventory()->all($offeredItems) as $i) {
+                            $total += $i->getCount();
+                        }
+
+                        $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{DIFFERENCE}"], [$offeredItems->getCount(), $offeredItems->getName(), $offeredItems->getCount() - $total], $this->plugin->getConfig()->getNested("messages.buy.buy-success")));
+                        return;
+                    }
+                    $player->getInventory()->removeItem($offeredItems);
+                    $this->plugin->getEconomyProvider()->giveMoney($player, $item->getSellPrice() * $data[1]);
+                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$offeredItems->getCount(), $offeredItems->getName(), $item->getSellPrice() * $data[1]], $this->plugin->getConfig()->getNested("messages.sell.sell-success")));
                 }
             }
         });
         $form->setTitle(str_replace(["{COUNT}", "{ITEM}"], [$item->getItem()->getCount(), $item->getItem()->getName()], $this->plugin->getConfig()->getNested("messages.menu.item-page-title")));
         $form->addLabel(
             (empty($item->getDescription()) ? "" : $item->getDescription() . "\n\n") .
-            (str_replace("{PRICE}", $item->getBuyPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-purchase-price"))) .
+            (str_replace("{PRICE}", $item->getBuyPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-purchase-price"))) . "\n" .
             ($item->canSell() ? (str_replace("{PRICE}", $item->getSellPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-sell-price"))) : "")
         );
         $form->addInput("Amount");

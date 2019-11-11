@@ -13,4 +13,7 @@ messages:
   buy:
     not-enough-money: "${PRICE} required. Missing {DIFFERENCE}."
     not-enough-space: "Your inventory does not contain enough space."
-    buy-success: "Purchase of {COUNT}x {ITEM} successful."
+    buy-success: "Purchase of {COUNT}x {ITEM} for ${PRICE} was successful."
+  sell:
+    not-enough-items: "{COUNT}x {ITEM} required. Missing {DIFFERENCE}x."
+    sell-success: "Sold {COUNT}x {ITEM} for ${PRICE}."

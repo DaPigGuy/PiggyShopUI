@@ -5,3 +5,19 @@ api: 3.2.0
 load: POSTWORLD
 author: DaPigGuy
 softdepend: ["EconomyAPI"]
+permissions:
+  piggyshopui:
+    default: false
+    description: "Use everything in PiggyShopUI"
+    children:
+      piggyshopui.command:
+        default: op
+        description: "Use all PiggyShopUI commands"
+        children:
+          piggyshopui.command.shop:
+            default: true
+            description: "Use /shop"
+            children:
+              piggyshopui.command.shop.edit:
+                default: op
+                description: "Use /shop edit"

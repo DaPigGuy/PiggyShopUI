@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace DaPigGuy\PiggyShopUI\shops;
 
 use DaPigGuy\PiggyShopUI\PiggyShopUI;
+use pocketmine\permission\Permission;
+use pocketmine\permission\PermissionManager;
 
 /**
  * Class ShopCategory
@@ -30,6 +32,9 @@ class ShopCategory
         $this->name = $name;
         $this->items = $items;
         $this->private = $private;
+
+        $permission = new Permission("piggyshopui.category." . strtolower($name), "Allows usage of the " . $name . " shop category");
+        PermissionManager::getInstance()->addPermission($permission);
     }
 
     /**

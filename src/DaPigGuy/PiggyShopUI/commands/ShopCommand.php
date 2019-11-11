@@ -55,10 +55,17 @@ class ShopCommand extends BaseCommand
                 $sender->sendMessage(TextFormat::RED . "Invalid shop category.");
                 return;
             }
+            if ($args["category"]->isPrivate() && !$sender->hasPermission("piggyshopui.category." . strtolower($args["category"]->getName()))) {
+                $sender->sendMessage(TextFormat::RED . "You do not have permission to view this category.");
+                return;
+            }
             $this->showCategoryItems($sender, $args["category"]);
             return;
         }
-        $categories = $this->plugin->getShopCategories();
+        /** @var ShopCategory[] $categories */
+        $categories = array_filter($this->plugin->getShopCategories(), function (ShopCategory $category) use ($sender): bool {
+            return !$category->isPrivate() || $sender->hasPermission("piggyshopui.category." . strtolower($category->getName()));
+        });
         if (count($categories) === 0) {
             $sender->sendMessage(TextFormat::RED . "No existing shop categories exist.");
             return;
@@ -159,6 +166,7 @@ class ShopCommand extends BaseCommand
      */
     protected function prepare(): void
     {
+        $this->setPermission("piggyshopui.command.shop");
         $this->registerArgument(0, new ShopCategoryEnum("category", true));
     }
 }

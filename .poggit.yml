@@ -1,6 +1,7 @@
 --- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/DaPigGuy/PiggyShopUI
 branches:
 - master
+- 2.0.0
 projects:
   PiggyShopUI:
     path: ""

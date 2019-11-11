@@ -7,6 +7,7 @@ namespace DaPigGuy\PiggyShopUI\commands\subcommands;
 use CortexPE\Commando\BaseSubCommand;
 use DaPigGuy\PiggyShopUI\PiggyShopUI;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
+use DaPigGuy\PiggyShopUI\shops\ShopItem;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\command\CommandSender;
@@ -54,6 +55,7 @@ class EditSubCommand extends BaseSubCommand
                         $this->showAddCategoryPage($player);
                         break;
                     case 1:
+                        $this->showEditCategoriesPage($player);
                         break;
                     case 2:
                         $this->showRemoveCategoryPage($player);
@@ -80,6 +82,10 @@ class EditSubCommand extends BaseSubCommand
                     $player->sendMessage(TextFormat::RED . "A shop category already exists with the name " . $data[0] . ".");
                     return;
                 }
+                if (strtolower($data[0]) === "edit") {
+                    $player->sendMessage(TextFormat::RED . "'" . $data[0] . "' is an invalid shop category name.");
+                    return;
+                }
                 $this->plugin->addShopCategory(new ShopCategory($data[0], [], $data[1]));
                 $player->sendMessage(TextFormat::GREEN . "Shop category " . $data[0] . " created successfully.");
             }
@@ -88,6 +94,113 @@ class EditSubCommand extends BaseSubCommand
         $form->addInput("Name");
         $form->addToggle("Private", false);
         $player->sendForm($form);
+    }
+
+    /**
+     * @param Player $player
+     */
+    public function showEditCategoriesPage(Player $player): void
+    {
+        $categories = $this->plugin->getShopCategories();
+        $form = new SimpleForm(function (Player $player, ?int $data) use ($categories): void {
+            if ($data !== null) {
+                $this->showEditCategoryPage($player, $categories[array_keys($categories)[$data]]);
+            }
+        });
+        foreach ($categories as $category) {
+            $form->addButton($category->getName());
+        }
+        $player->sendForm($form);
+    }
+
+    /**
+     * @param Player $player
+     * @param ShopCategory $category
+     */
+    public function showEditCategoryPage(Player $player, ShopCategory $category): void
+    {
+        $form = new SimpleForm(function (Player $player, ?int $data) use ($category): void {
+            if ($data !== null) {
+                switch ($data) {
+                    case 0:
+                        $this->showAddCategoryItemPage($player, $category);
+                        break;
+                    case 1:
+                        $this->showEditCategoryItemPage($player, $category);
+                        break;
+                    case 2:
+                        $this->showRemoveCategoryItemPage($player, $category);
+                        break;
+                    case 3:
+                        $this->showEditCategorySettingsPage($player, $category);
+                        break;
+                }
+            }
+        });
+        $form->setTitle("Edit Shop Categories");
+        $form->addButton("Add Item");
+        $form->addButton("Edit Item");
+        $form->addButton("Remove Item");
+        $form->addButton("Edit Settings");
+        $player->sendForm($form);
+    }
+
+    /**
+     * @param Player $player
+     * @param ShopCategory $category
+     */
+    public function showAddCategoryItemPage(Player $player, ShopCategory $category): void
+    {
+        $items = array_values($player->getInventory()->getContents());
+        $form = new CustomForm(function (Player $player, ?array $data) use ($items, $category): void {
+            if ($data !== null) {
+                if (!is_numeric($data[3]) || !is_numeric($data[6])) {
+                    $player->sendMessage(TextFormat::RED . "Prices must be numeric.");
+                    return;
+                }
+                $shopItem = new ShopItem($items[$data[0]], $data[2], (int)$data[3], $data[4], (int)$data[6]);
+                $category->addItem($shopItem);
+                $player->sendMessage(TextFormat::GREEN . "Item successfully added.");
+            }
+        });
+        $form->setTitle("Add Category Item");
+        $form->addDropdown("Item", array_map(function (Item $item): string {
+            return $item->getName();
+        }, $items));
+        $form->addLabel("Item descriptions are optional.");
+        $form->addInput("Description");
+        $form->addInput("Buy Price");
+        $form->addToggle("Can Sell", false);
+        $form->addLabel("Leave blank if 'Can Sell' is disabled.");
+        $form->addInput("Sell Price");
+        $player->sendForm($form);
+    }
+
+    /**
+     * @param Player $player
+     * @param ShopCategory $category
+     */
+    public function showEditCategoryItemPage(Player $player, ShopCategory $category): void
+    {
+
+    }
+
+    /**
+     * @param Player $player
+     * @param ShopCategory $category
+     */
+    public function showRemoveCategoryItemPage(Player $player, ShopCategory $category): void
+    {
+
+    }
+
+    /**
+     * @param Player $player
+     * @param ShopCategory $category
+     */
+    public function showEditCategorySettingsPage(Player $player, ShopCategory $category): void
+    {
+
     }
 
     /**

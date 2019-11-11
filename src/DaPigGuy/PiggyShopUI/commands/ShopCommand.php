@@ -27,9 +27,9 @@ class ShopCommand extends BaseCommand
     private $plugin;
 
     /**
+     * @param PiggyShopUI $plugin
      * @param string $name
      * @param string $description
-     * @param string $usageMessage
      * @param string[] $aliases
      */
     public function __construct(PiggyShopUI $plugin, string $name, string $description = "", array $aliases = [])
@@ -105,6 +105,26 @@ class ShopCommand extends BaseCommand
     {
         $form = new CustomForm(function (Player $player, ?array $data) use ($item) {
             if ($data !== null) {
+                if (!is_numeric($data[1])) {
+                    $player->sendMessage(TextFormat::RED . "Amount must be numeric.");
+                    return;
+                }
+                if (!$item->canSell() || !$data[2]) {
+                    if ($this->plugin->getEconomyProvider()->getMoney($player) < $data[1] * $item->getBuyPrice()) {
+                        $player->sendMessage(str_replace(["{PRICE}", "{DIFFERENCE}"], [$item->getBuyPrice() * $data[1], $item->getBuyPrice() * $data[1] - $this->plugin->getEconomyProvider()->getMoney($player)], $this->plugin->getConfig()->getNested("messages.buy.not-enough-money")));
+                        return;
+                    }
+                    $purchasedItem = clone $item->getItem();
+                    $purchasedItem->setCount($purchasedItem->getCount() * $data[1]);
+                    if (!$player->getInventory()->canAddItem($purchasedItem)) {
+                        $player->sendMessage($this->plugin->getConfig()->getNested("messages.buy.not-enough-space"));
+                        return;
+                    }
+                    $player->getInventory()->addItem($purchasedItem);
+                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}"], [$purchasedItem->getCount(), $purchasedItem->getName()], $this->plugin->getConfig()->getNested("messages.buy.buy-success")));
+                } else {
+                    //TODO: handle selling
+                }
             }
         });
         $form->setTitle(str_replace(["{COUNT}", "{ITEM}"], [$item->getItem()->getCount(), $item->getItem()->getName()], $this->plugin->getConfig()->getNested("messages.menu.item-page-title")));
@@ -114,7 +134,7 @@ class ShopCommand extends BaseCommand
             ($item->canSell() ? (str_replace("{PRICE}", $item->getSellPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-sell-price"))) : "")
         );
         $form->addInput("Amount");
-        if($item->canSell()) $form->addToggle("Sell", false);
+        if ($item->canSell()) $form->addToggle("Sell", false);
         $player->sendForm($form);
     }
 

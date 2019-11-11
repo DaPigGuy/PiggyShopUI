@@ -10,3 +10,7 @@ messages:
     item-page-title: "{COUNT}x {ITEM}"
     item-purchase-price: "Purchase Price: {PRICE}"
     item-sell-price: "Sell Price: {PRICE}"
+  buy:
+    not-enough-money: "${PRICE} required. Missing {DIFFERENCE}."
+    not-enough-space: "Your inventory does not contain enough space."
+    buy-success: "Purchase of {COUNT}x {ITEM} successful."

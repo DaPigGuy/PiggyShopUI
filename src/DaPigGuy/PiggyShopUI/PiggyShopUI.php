@@ -49,7 +49,7 @@ class PiggyShopUI extends PluginBase
 
         $this->shopConfig = new Config($this->getDataFolder() . "shops.yml");
         foreach ($this->shopConfig->getAll() as $category) {
-            $this->shopCategories[$category["name"]] = new ShopCategory($category["name"], array_map(function (array $item) {
+            $this->shopCategories[$category["name"]] = new ShopCategory($category["name"], array_map(function (array $item): ShopItem {
                 return new ShopItem(Item::jsonDeserialize($item["item"]), $item["description"], $item["buyPrice"], $item["canSell"], $item["sellPrice"]);
             }, $category["items"]), $category["private"]);
         }
@@ -86,7 +86,7 @@ class PiggyShopUI extends PluginBase
 
     public function saveToShopConfig(): void
     {
-        $this->shopConfig->setAll(array_map(function (ShopCategory $category) {
+        $this->shopConfig->setAll(array_map(function (ShopCategory $category): array {
             return $category->serialize();
         }, $this->shopCategories));
         $this->shopConfig->save();

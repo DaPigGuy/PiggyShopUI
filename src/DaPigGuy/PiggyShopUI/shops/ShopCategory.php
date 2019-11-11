@@ -93,7 +93,7 @@ class ShopCategory
      */
     public function serialize(): array
     {
-        return ["name" => $this->name, "items" => array_map(function (ShopItem $item) {
+        return ["name" => $this->name, "items" => array_map(function (ShopItem $item): array {
             return $item->serialize();
         }, $this->items), "private" => $this->private];
     }

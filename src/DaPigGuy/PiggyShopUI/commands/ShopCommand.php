@@ -70,7 +70,7 @@ class ShopCommand extends BaseCommand
             $sender->sendMessage(TextFormat::RED . "No existing shop categories exist.");
             return;
         }
-        $form = new SimpleForm(function (Player $player, ?int $data) use ($categories) {
+        $form = new SimpleForm(function (Player $player, ?int $data) use ($categories): void {
             if ($data !== null) {
                 $this->showCategoryItems($player, $categories[array_keys($categories)[$data]]);
             }
@@ -93,7 +93,7 @@ class ShopCommand extends BaseCommand
             $player->sendMessage(TextFormat::RED . "No existing items exist within this category.");
             return;
         }
-        $form = new SimpleForm(function (Player $player, ?int $data) use ($items) {
+        $form = new SimpleForm(function (Player $player, ?int $data) use ($items): void {
             if ($data !== null) {
                 $this->showItemPage($player, $items[array_keys($items)[$data]]);
             }
@@ -111,7 +111,7 @@ class ShopCommand extends BaseCommand
      */
     public function showItemPage(Player $player, ShopItem $item): void
     {
-        $form = new CustomForm(function (Player $player, ?array $data) use ($item) {
+        $form = new CustomForm(function (Player $player, ?array $data) use ($item): void {
             if ($data !== null) {
                 if (!is_numeric($data[1])) {
                     $player->sendMessage(TextFormat::RED . "Amount must be numeric.");

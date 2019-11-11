@@ -39,7 +39,7 @@ class ShopCategoryEnum extends StringEnumArgument
      */
     public function getEnumValues(): array
     {
-        return array_map(function (ShopCategory $category) {
+        return array_map(function (ShopCategory $category): string {
             return $category->getName();
         }, PiggyShopUI::getInstance()->getShopCategories());
     }

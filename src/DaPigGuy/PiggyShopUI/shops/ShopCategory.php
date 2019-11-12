@@ -72,6 +72,15 @@ class ShopCategory
     }
 
     /**
+     * @param int $index
+     */
+    public function removeItem(int $index): void
+    {
+        unset($this->items[$index]);
+        PiggyShopUI::getInstance()->saveToShopConfig();
+    }
+
+    /**
      * @return bool
      */
     public function isPrivate(): bool

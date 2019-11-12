@@ -191,7 +191,17 @@ class EditSubCommand extends BaseSubCommand
      */
     public function showRemoveCategoryItemPage(Player $player, ShopCategory $category): void
     {
-
+        $items = array_values($category->getItems());
+        $form = new CustomForm(function (Player $player, ?array $data) use ($category): void {
+            if ($data !== null) {
+                $category->removeItem($data[0]);
+                $player->sendMessage(TextFormat::GREEN . "Item successfully removed.");
+            }
+        });
+        $form->setTitle("Remove Category Item");
+        $form->addDropdown("Item", array_map(function (ShopItem $item): string {
+            return $item->getItem()->getName();
+        }, $items));
     }
 
     /**
@@ -200,7 +210,24 @@ class EditSubCommand extends BaseSubCommand
      */
     public function showEditCategorySettingsPage(Player $player, ShopCategory $category): void
     {
-
+        $form = new CustomForm(function (Player $player, ?array $data) use ($category): void {
+            if ($data !== null) {
+                if ($category->getName() !== $data[0]) {
+                    if ($this->plugin->getShopCategory($data[0]) !== null) {
+                        $player->sendMessage(TextFormat::RED . "Could not rename. A shop category already exists with the name.");
+                    } else {
+                        $category->setName($data[0]);
+                    }
+                }
+                if ($category->isPrivate() !== $data[1]) {
+                    $player->sendMessage(($data[1] ? TextFormat::GREEN : TextFormat::RED) . "Category is no" . ($data[1] ? "w private." : " longer private."));
+                }
+                $category->setPrivate($data[1]);
+            }
+        });
+        $form->setTitle("Category Settings");
+        $form->addInput("Name", $category->getName());
+        $form->addToggle("Private", $category->isPrivate());
     }
 
     /**

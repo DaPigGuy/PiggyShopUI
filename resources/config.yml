@@ -1,6 +1,5 @@
 economy:
   provider: EconomyS
-  format: "${amount}"
 messages:
   menu:
     main-title: "PiggyShopUI Shop"

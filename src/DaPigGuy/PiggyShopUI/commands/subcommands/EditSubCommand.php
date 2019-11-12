@@ -107,6 +107,7 @@ class EditSubCommand extends BaseSubCommand
                 $this->showEditCategoryPage($player, $categories[array_keys($categories)[$data]]);
             }
         });
+        $form->setTitle("Edit Shop Categories");
         foreach ($categories as $category) {
             $form->addButton($category->getName());
         }
@@ -126,7 +127,7 @@ class EditSubCommand extends BaseSubCommand
                         $this->showAddCategoryItemPage($player, $category);
                         break;
                     case 1:
-                        $this->showEditCategoryItemPage($player, $category);
+                        $this->showEditCategoryItemsPage($player, $category);
                         break;
                     case 2:
                         $this->showRemoveCategoryItemPage($player, $category);
@@ -137,7 +138,7 @@ class EditSubCommand extends BaseSubCommand
                 }
             }
         });
-        $form->setTitle("Edit Shop Categories");
+        $form->setTitle("Edit '" . $category->getName() . "' Category");
         $form->addButton("Add Item");
         $form->addButton("Edit Item");
         $form->addButton("Remove Item");
@@ -158,12 +159,12 @@ class EditSubCommand extends BaseSubCommand
                     $player->sendMessage(TextFormat::RED . "Prices must be numeric.");
                     return;
                 }
-                $shopItem = new ShopItem($items[$data[0]], $data[2], (int)$data[3], $data[4], (int)$data[6]);
+                $shopItem = new ShopItem($items[$data[0]], $data[2], (int)$data[3], $data[4], (int)$data[6] ?? 0);
                 $category->addItem($shopItem);
                 $player->sendMessage(TextFormat::GREEN . "Item successfully added.");
             }
         });
-        $form->setTitle("Add Category Item");
+        $form->setTitle("Add '" . $category->getName() . "'Category Item");
         $form->addDropdown("Item", array_map(function (Item $item): string {
             return $item->getName();
         }, $items));
@@ -171,8 +172,8 @@ class EditSubCommand extends BaseSubCommand
         $form->addInput("Description");
         $form->addInput("Buy Price");
         $form->addToggle("Can Sell", false);
-        $form->addLabel("Leave blank if 'Can Sell' is disabled.");
-        $form->addInput("Sell Price");
+        $form->addLabel("Do not change 'Sell Price' if 'Can Sell' is disabled.");
+        $form->addInput("Sell Price", "", "0");
         $player->sendForm($form);
     }
 
@@ -180,9 +181,50 @@ class EditSubCommand extends BaseSubCommand
      * @param Player $player
      * @param ShopCategory $category
      */
-    public function showEditCategoryItemPage(Player $player, ShopCategory $category): void
+    public function showEditCategoryItemsPage(Player $player, ShopCategory $category): void
     {
+        $items = $category->getItems();
+        if (count($items) === 0) {
+            $player->sendMessage(TextFormat::RED . "No items exist within this category.");
+            return;
+        }
+        $form = new SimpleForm(function (Player $player, ?int $data) use ($items): void {
+            if ($data !== null) {
+                $this->showEditCategoryItemPage($player, $items[array_keys($items)[$data]]);
+            }
+        });
+        $form->setTitle("Edit '" . $category->getName() . "' Category Items");
+        foreach ($items as $item) {
+            $form->addButton($item->getItem()->getName());
+        }
+        $player->sendForm($form);
+    }
 
+    /**
+     * @param Player $player
+     * @param ShopItem $item
+     */
+    public function showEditCategoryItemPage(Player $player, ShopItem $item): void
+    {
+        $form = new CustomForm(function (Player $player, ?array $data) use ($item): void {
+            if ($data !== null) {
+                if (!is_numeric($data[1]) || !is_numeric($data[3])) {
+                    $player->sendMessage(TextFormat::RED . "Prices must be numeric.");
+                    return;
+                }
+                $item->setDescription($data[0]);
+                $item->setBuyPrice((int)$data[1]);
+                $item->setCanSell($data[2]);
+                $item->setSellPrice((int)$data[3]);
+                $player->sendMessage(TextFormat::GREEN . "Item updated successfully.");
+            }
+        });
+        $form->setTitle("Edit Item '" . $item->getItem()->getName() . "'");
+        $form->addInput("Description", "", $item->getDescription());
+        $form->addInput("Buy Price", "", (string)$item->getBuyPrice());
+        $form->addToggle("Can Sell", $item->canSell());
+        $form->addInput("Sell Price", "", (string)$item->getSellPrice());
+        $player->sendForm($form);
     }
 
     /**
@@ -198,10 +240,11 @@ class EditSubCommand extends BaseSubCommand
                 $player->sendMessage(TextFormat::GREEN . "Item successfully removed.");
             }
         });
-        $form->setTitle("Remove Category Item");
+        $form->setTitle("Remove '" . $category->getName() . "' Category Item");
         $form->addDropdown("Item", array_map(function (ShopItem $item): string {
             return $item->getItem()->getName();
         }, $items));
+        $player->sendForm($form);
     }
 
     /**
@@ -217,6 +260,7 @@ class EditSubCommand extends BaseSubCommand
                         $player->sendMessage(TextFormat::RED . "Could not rename. A shop category already exists with the name.");
                     } else {
                         $category->setName($data[0]);
+                        $player->sendMessage(TextFormat::GREEN . "Category renamed to '" . $category->getName() . "'");
                     }
                 }
                 if ($category->isPrivate() !== $data[1]) {
@@ -225,9 +269,10 @@ class EditSubCommand extends BaseSubCommand
                 $category->setPrivate($data[1]);
             }
         });
-        $form->setTitle("Category Settings");
-        $form->addInput("Name", $category->getName());
+        $form->setTitle("'" . $category->getName() . "' Category Settings");
+        $form->addInput("Name", "", $category->getName());
         $form->addToggle("Private", $category->isPrivate());
+        $player->sendForm($form);
     }
 
     /**

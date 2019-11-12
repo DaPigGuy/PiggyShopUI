@@ -92,7 +92,7 @@ class ShopCommand extends BaseCommand
     {
         $items = $category->getItems();
         if (count($items) === 0) {
-            $player->sendMessage(TextFormat::RED . "No existing items exist within this category.");
+            $player->sendMessage(TextFormat::RED . "No items exist within this category.");
             return;
         }
         $form = new SimpleForm(function (Player $player, ?int $data) use ($items): void {
@@ -143,7 +143,7 @@ class ShopCommand extends BaseCommand
                             $total += $i->getCount();
                         }
 
-                        $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{DIFFERENCE}"], [$offeredItems->getCount(), $offeredItems->getName(), $offeredItems->getCount() - $total], $this->plugin->getConfig()->getNested("messages.buy.buy-success")));
+                        $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{DIFFERENCE}"], [$offeredItems->getCount(), $offeredItems->getName(), $offeredItems->getCount() - $total], $this->plugin->getConfig()->getNested("messages.sell.not-enough-items")));
                         return;
                     }
                     $player->getInventory()->removeItem($offeredItems);

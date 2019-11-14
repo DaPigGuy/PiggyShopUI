@@ -24,6 +24,11 @@ class ShopItem
     /** @var int */
     public $sellPrice;
 
+    /** @var int */
+    public $imageType;
+    /** @var string */
+    public $imagePath;
+
     /**
      * ShopItem constructor.
      * @param Item $item
@@ -31,14 +36,18 @@ class ShopItem
      * @param int $buyPrice
      * @param bool $canSell
      * @param int $sellPrice
+     * @param int $imageType
+     * @param string $imagePath
      */
-    public function __construct(Item $item, string $description, int $buyPrice, bool $canSell, int $sellPrice)
+    public function __construct(Item $item, string $description, int $buyPrice, bool $canSell, int $sellPrice, int $imageType, string $imagePath)
     {
         $this->item = $item;
         $this->description = $description;
         $this->buyPrice = $buyPrice;
         $this->canSell = $canSell;
         $this->sellPrice = $sellPrice;
+        $this->imagePath = $imagePath;
+        $this->imageType = $imageType;
     }
 
     /**
@@ -118,10 +127,44 @@ class ShopItem
     }
 
     /**
+     * @return int
+     */
+    public function getImageType(): int
+    {
+        return $this->imageType;
+    }
+
+    /**
+     * @param int $imageType
+     */
+    public function setImageType(int $imageType): void
+    {
+        $this->imageType = $imageType;
+        PiggyShopUI::getInstance()->saveToShopConfig();
+    }
+
+    /**
+     * @return string
+     */
+    public function getImagePath(): string
+    {
+        return $this->imagePath;
+    }
+
+    /**
+     * @param string $imagePath
+     */
+    public function setImagePath(string $imagePath): void
+    {
+        $this->imagePath = $imagePath;
+        PiggyShopUI::getInstance()->saveToShopConfig();
+    }
+
+    /**
      * @return array
      */
     public function serialize(): array
     {
-        return ["item" => $this->item->jsonSerialize(), "description" => $this->description, "buyPrice" => $this->buyPrice, "canSell" => $this->canSell, "sellPrice" => $this->sellPrice];
+        return ["item" => $this->item->jsonSerialize(), "description" => $this->description, "buyPrice" => $this->buyPrice, "canSell" => $this->canSell, "sellPrice" => $this->sellPrice, "imageType" => $this->imageType, "imagePath" => $this->imagePath];
     }
 }

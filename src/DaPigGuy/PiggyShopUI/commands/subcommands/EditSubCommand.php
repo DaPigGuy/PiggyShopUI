@@ -159,7 +159,7 @@ class EditSubCommand extends BaseSubCommand
                     $player->sendMessage(TextFormat::RED . "Prices must be numeric.");
                     return;
                 }
-                $shopItem = new ShopItem($items[$data[0]], $data[2], (int)$data[3], $data[4], (int)$data[6] ?? 0);
+                $shopItem = new ShopItem($items[$data[0]], $data[2], (int)$data[3], $data[4], (int)$data[6] ?? 0, $data[7] - 1, $data[8]);
                 $category->addItem($shopItem);
                 $player->sendMessage(TextFormat::GREEN . "Item successfully added.");
             }
@@ -174,6 +174,8 @@ class EditSubCommand extends BaseSubCommand
         $form->addToggle("Can Sell", false);
         $form->addLabel("Do not change 'Sell Price' if 'Can Sell' is disabled.");
         $form->addInput("Sell Price", "", "0");
+        $form->addDropdown("Image Type", ["Disabled", "Path", "URL"]);
+        $form->addInput("Image Path/URL", "");
         $player->sendForm($form);
     }
 
@@ -216,6 +218,8 @@ class EditSubCommand extends BaseSubCommand
                 $item->setBuyPrice((int)$data[1]);
                 $item->setCanSell($data[2]);
                 $item->setSellPrice((int)$data[3]);
+                $item->setImageType($data[4] - 1);
+                $item->setImagePath($data[5]);
                 $player->sendMessage(TextFormat::GREEN . "Item updated successfully.");
             }
         });
@@ -224,6 +228,8 @@ class EditSubCommand extends BaseSubCommand
         $form->addInput("Buy Price", "", (string)$item->getBuyPrice());
         $form->addToggle("Can Sell", $item->canSell());
         $form->addInput("Sell Price", "", (string)$item->getSellPrice());
+        $form->addDropdown("Image Type", ["Disabled", "Path", "URL"], $item->getImageType() + 1);
+        $form->addInput("Image Path/URL", "", $item->getImagePath());
         $player->sendForm($form);
     }
 

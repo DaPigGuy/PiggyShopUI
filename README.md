@@ -1,6 +1,3 @@
-# DISCLAIMER
-This is a development version of PiggyShopUI. Many features are incomplete or missing. Use at your own risk. 
-
 # PiggyShopUI [![Poggit-CI](https://poggit.pmmp.io/ci.badge/DaPigGuy/PiggyShopUI/PiggyShopUI/master)](https://poggit.pmmp.io/ci/DaPigGuy/PiggyShopUI/~) 
 
 PiggyShopUI is an open-sourced plugin using [libFormAPI](https://github.com/jojoe77777/FormAPI) to create form shops.

@@ -2,9 +2,11 @@
 
 namespace DaPigGuy\PiggyShopUI;
 
+use DaPigGuy\libPiggyEconomy\exceptions\MissingProviderDependencyException;
+use DaPigGuy\libPiggyEconomy\exceptions\UnknownProviderException;
+use DaPigGuy\libPiggyEconomy\libPiggyEconomy;
+use DaPigGuy\libPiggyEconomy\providers\EconomyProvider;
 use DaPigGuy\PiggyShopUI\commands\ShopCommand;
-use DaPigGuy\PiggyShopUI\economy\EconomyProvider;
-use DaPigGuy\PiggyShopUI\economy\EconomySProvider;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
 use DaPigGuy\PiggyShopUI\shops\ShopItem;
 use pocketmine\item\Item;
@@ -28,23 +30,18 @@ class PiggyShopUI extends PluginBase
     /** @var EconomyProvider */
     public $economyProvider;
 
+    /**
+     * @throws MissingProviderDependencyException
+     * @throws UnknownProviderException
+     */
     public function onEnable(): void
     {
         self::$instance = $this;
 
         $this->saveDefaultConfig();
 
-        switch (strtolower($this->getConfig()->getNested("economy.provider"))) {
-            case "economys":
-            default:
-                if ($this->getServer()->getPluginManager()->getPlugin("EconomyAPI") === null) {
-                    $this->getLogger()->error("EconomyAPI is required for your selected economy provider.");
-                    $this->getServer()->getPluginManager()->disablePlugin($this);
-                    return;
-                }
-                $this->economyProvider = new EconomySProvider();
-                break;
-        }
+        libPiggyEconomy::init();
+        $this->economyProvider = libPiggyEconomy::getProvider($this->getConfig()->get("economy"));
 
         $this->shopConfig = new Config($this->getDataFolder() . "shops.yml");
         foreach ($this->shopConfig->getAll() as $category) {

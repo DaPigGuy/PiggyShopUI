@@ -21,17 +21,24 @@ class ShopCategory
     /** @var bool */
     public $private;
 
+    /** @var int */
+    public $imageType;
+    /** @var string */
+    public $imagePath;
+
     /**
      * ShopCategory constructor.
      * @param string $name
      * @param array $items
      * @param bool $private
      */
-    public function __construct(string $name, array $items, bool $private)
+    public function __construct(string $name, array $items, bool $private, int $imageType, string $imagePath)
     {
         $this->name = $name;
         $this->items = $items;
         $this->private = $private;
+        $this->imagePath = $imagePath;
+        $this->imageType = $imageType;
 
         $permission = new Permission("piggyshopui.category." . strtolower($name), "Allows usage of the " . $name . " shop category");
         PermissionManager::getInstance()->addPermission($permission);
@@ -98,12 +105,47 @@ class ShopCategory
     }
 
     /**
+     * @return int
+     */
+    public function getImageType(): int
+    {
+        return $this->imageType;
+    }
+
+    /**
+     * @param int $imageType
+     */
+    public function setImageType(int $imageType): void
+    {
+        $this->imageType = $imageType;
+        PiggyShopUI::getInstance()->saveToShopConfig();
+    }
+
+    /**
+     * @return string
+     */
+    public function getImagePath(): string
+    {
+        return $this->imagePath;
+    }
+
+    /**
+     * @param string $imagePath
+     */
+    public function setImagePath(string $imagePath): void
+    {
+        $this->imagePath = $imagePath;
+        PiggyShopUI::getInstance()->saveToShopConfig();
+    }
+
+
+    /**
      * @return array
      */
     public function serialize(): array
     {
         return ["name" => $this->name, "items" => array_map(function (ShopItem $item): array {
             return $item->serialize();
-        }, $this->items), "private" => $this->private];
+        }, $this->items), "private" => $this->private, "imageType" => $this->imageType, "imagePath" => $this->imagePath];
     }
 }

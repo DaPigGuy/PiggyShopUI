@@ -79,7 +79,7 @@ class ShopCommand extends BaseCommand
         });
         $form->setTitle($this->plugin->getConfig()->getNested("messages.menu.main-title"));
         foreach ($categories as $category) {
-            $form->addButton(str_replace("{CATEGORY}", $category->getName(), $this->plugin->getConfig()->getNested("messages.menu.category-button")));
+            $form->addButton(str_replace("{CATEGORY}", $category->getName(), $this->plugin->getConfig()->getNested("messages.menu.category-button")), $category->getImageType(), $category->getImagePath());
         }
         $sender->sendForm($form);
     }

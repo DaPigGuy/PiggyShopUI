@@ -86,13 +86,15 @@ class EditSubCommand extends BaseSubCommand
                     $player->sendMessage(TextFormat::RED . "'" . $data[0] . "' is an invalid shop category name.");
                     return;
                 }
-                $this->plugin->addShopCategory(new ShopCategory($data[0], [], $data[1]));
+                $this->plugin->addShopCategory(new ShopCategory($data[0], [], $data[1], $data[2] - 1, $data[3]));
                 $player->sendMessage(TextFormat::GREEN . "Shop category " . $data[0] . " created successfully.");
             }
         });
         $form->setTitle("Add Shop Category");
         $form->addInput("Name");
         $form->addToggle("Private", false);
+        $form->addDropdown("Image Type", ["Disabled", "Path", "URL"]);
+        $form->addInput("Image Path/URL", "");
         $player->sendForm($form);
     }
 
@@ -273,11 +275,18 @@ class EditSubCommand extends BaseSubCommand
                     $player->sendMessage(($data[1] ? TextFormat::GREEN : TextFormat::RED) . "Category is no" . ($data[1] ? "w private." : " longer private."));
                 }
                 $category->setPrivate($data[1]);
+                if ($category->getImageType() !== $data[2] - 1 || $category->getImagePath() !== $data[3]) {
+                    $player->sendMessage(TextFormat::GREEN . "Category image updated.");
+                }
+                $category->setImageType($data[2] - 1);
+                $category->setImagePath($data[3]);
             }
         });
         $form->setTitle("'" . $category->getName() . "' Category Settings");
         $form->addInput("Name", "", $category->getName());
         $form->addToggle("Private", $category->isPrivate());
+        $form->addDropdown("Image Type", ["Disabled", "Path", "URL"], $category->getImageType() + 1);
+        $form->addInput("Image Path/URL", "", $category->getImagePath());
         $player->sendForm($form);
     }
 

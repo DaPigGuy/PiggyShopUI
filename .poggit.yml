@@ -11,5 +11,5 @@ projects:
     - src: CortexPE/Commando/Commando
       version: ^0.5
     - src: DaPigGuy/libPiggyEconomy/libPiggyEconomy
-      version: ^1.0.0
+      version: ^1.0.1
 ...

@@ -2,6 +2,7 @@
 
 namespace DaPigGuy\PiggyShopUI;
 
+use CortexPE\Commando\BaseCommand;
 use DaPigGuy\libPiggyEconomy\exceptions\MissingProviderDependencyException;
 use DaPigGuy\libPiggyEconomy\exceptions\UnknownProviderException;
 use DaPigGuy\libPiggyEconomy\libPiggyEconomy;
@@ -10,6 +11,7 @@ use DaPigGuy\PiggyShopUI\commands\ShopCommand;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
 use DaPigGuy\PiggyShopUI\shops\ShopItem;
 use DaPigGuy\PiggyShopUI\tasks\CheckUpdatesTask;
+use jojoe77777\FormAPI\Form;
 use pocketmine\item\Item;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
@@ -37,6 +39,22 @@ class PiggyShopUI extends PluginBase
      */
     public function onEnable(): void
     {
+        if (!class_exists(BaseCommand::class)) {
+            $this->getLogger()->error("Commando virion not found. Please download PiggyShopUI from Poggit-CI or use DEVirion (not recommended).");
+            $this->getServer()->getPluginManager()->disablePlugin($this);
+            return;
+        }
+        if (!class_exists(Form::class)) {
+            $this->getLogger()->error("libformapi virion not found. Please download PiggyShopUI from Poggit-CI or use DEVirion (not recommended).");
+            $this->getServer()->getPluginManager()->disablePlugin($this);
+            return;
+        }
+        if (!class_exists(libPiggyEconomy::class)) {
+            $this->getLogger()->error("libPiggyEconomy virion not found. Please download PiggyShopUI from Poggit-CI or use DEVirion (not recommended).");
+            $this->getServer()->getPluginManager()->disablePlugin($this);
+            return;
+        }
+
         self::$instance = $this;
 
         $this->saveDefaultConfig();

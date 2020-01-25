@@ -16,9 +16,12 @@ permissions:
         description: "Use all PiggyShopUI commands"
         children:
           piggyshopui.command.shop:
-            default: true
+            default: op
             description: "Use /shop"
             children:
+              piggyshopui.command.shop.use:
+                default: true
+                description: "Use /shop"
               piggyshopui.command.shop.edit:
                 default: op
                 description: "Use /shop edit"

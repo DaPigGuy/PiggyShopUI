@@ -169,7 +169,7 @@ class ShopCommand extends BaseCommand
      */
     protected function prepare(): void
     {
-        $this->setPermission("piggyshopui.command.shop");
+        $this->setPermission("piggyshopui.command.shop.use");
         $this->registerSubCommand(new EditSubCommand($this->plugin, "edit", "Edit shop categories"));
         $this->registerArgument(0, new ShopCategoryEnum("category", true));
     }

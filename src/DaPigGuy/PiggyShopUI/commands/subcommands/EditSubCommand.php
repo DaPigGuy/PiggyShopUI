@@ -76,7 +76,7 @@ class EditSubCommand extends BaseSubCommand
     public function showAddCategoryPage(Player $player): void
     {
         $items = array_values($player->getInventory()->getContents());
-        $form = new CustomForm(function (Player $player, ?array $data) use ($items): void {
+        $form = new CustomForm(function (Player $player, ?array $data): void {
             if ($data !== null) {
                 if ($this->plugin->getShopCategory($data[0]) !== null) {
                     $player->sendMessage(TextFormat::RED . "A shop category already exists with the name " . $data[0] . ".");

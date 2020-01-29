@@ -12,7 +12,6 @@ Please make sure your pull request complies with these guidelines:
 Does your Pull Request:
 - resolve a bug? If so, link the issue with the PR and add explain what caused the issue.
 - enhance the plugin? If so, explain what this adds, including why it should be added.
-- translate the plugin? If so, refer to CONTRIBUTING.md for the guidelines of translating to another language.
 -->
 
 #### **Testing Environment**

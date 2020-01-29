@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DaPigGuy\PiggyShopUI\commands;
 
-use CortexPE\Commando\args\BaseArgument;
 use CortexPE\Commando\BaseCommand;
 use CortexPE\Commando\exception\ArgumentOrderException;
 use CortexPE\Commando\exception\SubCommandCollision;
@@ -44,7 +43,7 @@ class ShopCommand extends BaseCommand
     /**
      * @param CommandSender $sender
      * @param string $aliasUsed
-     * @param BaseArgument[] $args
+     * @param array $args
      */
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
@@ -155,8 +154,8 @@ class ShopCommand extends BaseCommand
         $form->setTitle(str_replace(["{COUNT}", "{ITEM}"], [$item->getItem()->getCount(), $item->getItem()->getName()], $this->plugin->getConfig()->getNested("messages.menu.item-page-title")));
         $form->addLabel(
             (empty($item->getDescription()) ? "" : $item->getDescription() . "\n\n") .
-            (str_replace("{PRICE}", $item->getBuyPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-purchase-price"))) . "\n" .
-            ($item->canSell() ? (str_replace("{PRICE}", $item->getSellPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-sell-price"))) : "")
+            (str_replace("{PRICE}", (string)$item->getBuyPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-purchase-price"))) . "\n" .
+            ($item->canSell() ? (str_replace("{PRICE}", (string)$item->getSellPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-sell-price"))) : "")
         );
         $form->addInput("Amount");
         if ($item->canSell()) $form->addToggle("Sell", false);

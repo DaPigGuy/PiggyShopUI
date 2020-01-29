@@ -52,7 +52,7 @@ class ShopCommand extends BaseCommand
             return;
         }
         if (isset($args["category"])) {
-            if ($args["category"] === null) {
+            if (!$args["category"] instanceof ShopCategory) {
                 $sender->sendMessage(TextFormat::RED . "Invalid shop category.");
                 return;
             }
@@ -119,22 +119,22 @@ class ShopCommand extends BaseCommand
                     return;
                 }
                 if (!$item->canSell() || !$data[2]) {
-                    if ($this->plugin->getEconomyProvider()->getMoney($player) < $data[1] * $item->getBuyPrice()) {
-                        $player->sendMessage(str_replace(["{PRICE}", "{DIFFERENCE}"], [$item->getBuyPrice() * $data[1], $item->getBuyPrice() * $data[1] - $this->plugin->getEconomyProvider()->getMoney($player)], $this->plugin->getConfig()->getNested("messages.buy.not-enough-money")));
+                    if ($this->plugin->getEconomyProvider()->getMoney($player) < (int)$data[1] * $item->getBuyPrice()) {
+                        $player->sendMessage(str_replace(["{PRICE}", "{DIFFERENCE}"], [$item->getBuyPrice() * (int)$data[1], $item->getBuyPrice() * (int)$data[1] - $this->plugin->getEconomyProvider()->getMoney($player)], $this->plugin->getConfig()->getNested("messages.buy.not-enough-money")));
                         return;
                     }
                     $purchasedItem = clone $item->getItem();
-                    $purchasedItem->setCount($purchasedItem->getCount() * $data[1]);
+                    $purchasedItem->setCount($purchasedItem->getCount() * (int)$data[1]);
                     if (!$player->getInventory()->canAddItem($purchasedItem)) {
                         $player->sendMessage($this->plugin->getConfig()->getNested("messages.buy.not-enough-space"));
                         return;
                     }
                     $player->getInventory()->addItem($purchasedItem);
-                    $this->plugin->getEconomyProvider()->takeMoney($player, $item->getBuyPrice() * $data[1]);
-                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$purchasedItem->getCount(), $purchasedItem->getName(), $item->getBuyPrice() * $data[1]], $this->plugin->getConfig()->getNested("messages.buy.buy-success")));
+                    $this->plugin->getEconomyProvider()->takeMoney($player, $item->getBuyPrice() * (int)$data[1]);
+                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$purchasedItem->getCount(), $purchasedItem->getName(), $item->getBuyPrice() * (int)$data[1]], $this->plugin->getConfig()->getNested("messages.buy.buy-success")));
                 } else {
                     $offeredItems = clone $item->getItem();
-                    $offeredItems->setCount($offeredItems->getCount() * $data[1]);
+                    $offeredItems->setCount($offeredItems->getCount() * (int)$data[1]);
                     if (!$player->getInventory()->contains($offeredItems)) {
                         $total = 0;
                         /** @var Item $i */
@@ -146,8 +146,8 @@ class ShopCommand extends BaseCommand
                         return;
                     }
                     $player->getInventory()->removeItem($offeredItems);
-                    $this->plugin->getEconomyProvider()->giveMoney($player, $item->getSellPrice() * $data[1]);
-                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$offeredItems->getCount(), $offeredItems->getName(), $item->getSellPrice() * $data[1]], $this->plugin->getConfig()->getNested("messages.sell.sell-success")));
+                    $this->plugin->getEconomyProvider()->giveMoney($player, $item->getSellPrice() * (int)$data[1]);
+                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$offeredItems->getCount(), $offeredItems->getName(), $item->getSellPrice() * (int)$data[1]], $this->plugin->getConfig()->getNested("messages.sell.sell-success")));
                 }
             }
         });

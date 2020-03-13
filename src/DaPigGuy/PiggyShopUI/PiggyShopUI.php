@@ -16,10 +16,6 @@ use pocketmine\item\Item;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 
-/**
- * Class PiggyShopUI
- * @package DaPigGuy\PiggyShopUI
- */
 class PiggyShopUI extends PluginBase
 {
     /** @var PiggyShopUI */
@@ -74,17 +70,11 @@ class PiggyShopUI extends PluginBase
         $this->getServer()->getAsyncPool()->submitTask(new CheckUpdatesTask($this->getDescription()->getVersion(), $this->getDescription()->getCompatibleApis()[0]));
     }
 
-    /**
-     * @return PiggyShopUI
-     */
     public static function getInstance(): PiggyShopUI
     {
         return self::$instance;
     }
 
-    /**
-     * @return Config
-     */
     public function getShopConfig(): Config
     {
         return $this->shopConfig;
@@ -98,18 +88,12 @@ class PiggyShopUI extends PluginBase
         $this->shopConfig->save();
     }
 
-    /**
-     * @param ShopCategory $category
-     */
     public function addShopCategory(ShopCategory $category): void
     {
         $this->shopCategories[$category->getName()] = $category;
         $this->saveToShopConfig();
     }
 
-    /**
-     * @param ShopCategory $category
-     */
     public function removeShopCategory(ShopCategory $category): void
     {
         unset($this->shopCategories[$category->getName()]);
@@ -117,10 +101,6 @@ class PiggyShopUI extends PluginBase
     }
 
 
-    /**
-     * @param string $name
-     * @return ShopCategory|null
-     */
     public function getShopCategory(string $name): ?ShopCategory
     {
         return $this->shopCategories[$name] ?? null;
@@ -134,9 +114,6 @@ class PiggyShopUI extends PluginBase
         return $this->shopCategories;
     }
 
-    /**
-     * @return EconomyProvider
-     */
     public function getEconomyProvider(): EconomyProvider
     {
         return $this->economyProvider;

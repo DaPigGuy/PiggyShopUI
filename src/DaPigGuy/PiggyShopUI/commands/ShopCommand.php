@@ -19,10 +19,6 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-/**
- * Class ShopCommand
- * @package DaPigGuy\PiggyShopUI\commands
- */
 class ShopCommand extends BaseCommand
 {
     /** @var PiggyShopUI */
@@ -40,11 +36,6 @@ class ShopCommand extends BaseCommand
         parent::__construct($name, $description, $aliases);
     }
 
-    /**
-     * @param CommandSender $sender
-     * @param string $aliasUsed
-     * @param array $args
-     */
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
         if (!$sender instanceof Player) {
@@ -83,10 +74,6 @@ class ShopCommand extends BaseCommand
         $sender->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     * @param ShopCategory $category
-     */
     public function showCategoryItems(Player $player, ShopCategory $category): void
     {
         $items = $category->getItems();
@@ -106,10 +93,6 @@ class ShopCommand extends BaseCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     * @param ShopItem $item
-     */
     public function showItemPage(Player $player, ShopItem $item): void
     {
         $form = new CustomForm(function (Player $player, ?array $data) use ($item): void {

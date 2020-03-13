@@ -15,33 +15,17 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-/**
- * Class EditSubCommand
- * @package DaPigGuy\PiggyShopUI\commands\subcommands
- */
 class EditSubCommand extends BaseSubCommand
 {
     /** @var PiggyShopUI */
     private $plugin;
 
-    /**
-     * EditSubCommand constructor.
-     * @param PiggyShopUI $plugin
-     * @param string $name
-     * @param string $description
-     * @param array $aliases
-     */
     public function __construct(PiggyShopUI $plugin, string $name, string $description = "", array $aliases = [])
     {
         $this->plugin = $plugin;
         parent::__construct($name, $description, $aliases);
     }
 
-    /**
-     * @param CommandSender $sender
-     * @param string $aliasUsed
-     * @param array $args
-     */
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
         if (!$sender instanceof Player) {
@@ -70,9 +54,6 @@ class EditSubCommand extends BaseSubCommand
         $sender->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     */
     public function showAddCategoryPage(Player $player): void
     {
         $items = array_values($player->getInventory()->getContents());
@@ -98,9 +79,6 @@ class EditSubCommand extends BaseSubCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     */
     public function showEditCategoriesPage(Player $player): void
     {
         $categories = $this->plugin->getShopCategories();
@@ -116,10 +94,6 @@ class EditSubCommand extends BaseSubCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     * @param ShopCategory $category
-     */
     public function showEditCategoryPage(Player $player, ShopCategory $category): void
     {
         $form = new SimpleForm(function (Player $player, ?int $data) use ($category): void {
@@ -148,10 +122,6 @@ class EditSubCommand extends BaseSubCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     * @param ShopCategory $category
-     */
     public function showAddCategoryItemPage(Player $player, ShopCategory $category): void
     {
         $items = array_values($player->getInventory()->getContents());
@@ -181,10 +151,6 @@ class EditSubCommand extends BaseSubCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     * @param ShopCategory $category
-     */
     public function showEditCategoryItemsPage(Player $player, ShopCategory $category): void
     {
         $items = $category->getItems();
@@ -204,10 +170,6 @@ class EditSubCommand extends BaseSubCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     * @param ShopItem $item
-     */
     public function showEditCategoryItemPage(Player $player, ShopItem $item): void
     {
         $form = new CustomForm(function (Player $player, ?array $data) use ($item): void {
@@ -235,10 +197,6 @@ class EditSubCommand extends BaseSubCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     * @param ShopCategory $category
-     */
     public function showRemoveCategoryItemPage(Player $player, ShopCategory $category): void
     {
         $items = array_values($category->getItems());
@@ -255,10 +213,6 @@ class EditSubCommand extends BaseSubCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     * @param ShopCategory $category
-     */
     public function showEditCategorySettingsPage(Player $player, ShopCategory $category): void
     {
         $form = new CustomForm(function (Player $player, ?array $data) use ($category): void {
@@ -290,9 +244,6 @@ class EditSubCommand extends BaseSubCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @param Player $player
-     */
     public function showRemoveCategoryPage(Player $player): void
     {
         /** @var ShopCategory[] $categories */

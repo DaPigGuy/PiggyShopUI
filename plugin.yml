@@ -9,19 +9,19 @@ website: "https://github.com/DaPigGuy/PiggyShopUI/"
 permissions:
   piggyshopui:
     default: false
-    description: "Use everything in PiggyShopUI"
+    description: "Allows usage of all PiggyShopUI features"
     children:
       piggyshopui.command:
         default: op
-        description: "Use all PiggyShopUI commands"
+        description: "Allow usage of all PiggyShopUI commands"
         children:
           piggyshopui.command.shop:
             default: op
-            description: "Use /shop"
+            description: "Allow usage of the /shop commands"
             children:
-              piggyshopui.command.shop.use:
-                default: true
-                description: "Use /shop"
               piggyshopui.command.shop.edit:
                 default: op
-                description: "Use /shop edit"
+                description: "Allow usage of the /shop edit subcommand"
+              piggyshopui.command.shop.use:
+                default: true
+                description: "Allow usage of the /shop command"

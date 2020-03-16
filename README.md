@@ -36,7 +36,7 @@ PiggyShopUI is an open-sourced plugin using [libFormAPI](https://github.com/jojo
 ## Information
 * We do not support any spoons. Anything to do with spoons (Issues or PRs) will be ignored.
 * We are using the following virions: [Commando](https://github.com/CortexPE/Commando), [libFormAPI](https://github.com/jojoe77777/FormAPI), and [libPiggyEconomy](https://github.com/DaPigGuy/libPiggyEconomy).
-    * **You MUST use the pre-compiled phar from [Poggit-CI](https://poggit.pmmp.io/ci/DaPigGuy/PiggyAuctions/~) instead of GitHub.**
+    * **You MUST use the pre-compiled phar from [Poggit-CI](https://poggit.pmmp.io/ci/DaPigGuy/PiggyShopUI/~) instead of GitHub.**
     * If you wish to run it via source, check out [DEVirion](https://github.com/poggit/devirion).
 * Check out our [Discord Server](https://discord.gg/qmnDsSD) for additional plugin support.
 

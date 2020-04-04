@@ -3,6 +3,8 @@
 namespace DaPigGuy\PiggyShopUI;
 
 use CortexPE\Commando\BaseCommand;
+use CortexPE\Commando\exception\HookAlreadyRegistered;
+use CortexPE\Commando\PacketHooker;
 use DaPigGuy\libPiggyEconomy\exceptions\MissingProviderDependencyException;
 use DaPigGuy\libPiggyEconomy\exceptions\UnknownProviderException;
 use DaPigGuy\libPiggyEconomy\libPiggyEconomy;
@@ -32,6 +34,7 @@ class PiggyShopUI extends PluginBase
     /**
      * @throws MissingProviderDependencyException
      * @throws UnknownProviderException
+     * @throws HookAlreadyRegistered
      */
     public function onEnable(): void
     {
@@ -65,6 +68,7 @@ class PiggyShopUI extends PluginBase
             }, $category["items"]), $category["private"], $category["imageType"] ?? -1, $category["imagePath"] ?? "");
         }
 
+        if (!PacketHooker::isRegistered()) PacketHooker::register($this);
         $this->getServer()->getCommandMap()->register("piggyshopui", new ShopCommand($this, "shop", "Open the shop menu"));
 
         $this->getServer()->getAsyncPool()->submitTask(new CheckUpdatesTask($this->getDescription()->getVersion(), $this->getDescription()->getCompatibleApis()[0]));

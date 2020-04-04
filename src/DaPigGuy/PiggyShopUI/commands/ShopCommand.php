@@ -100,7 +100,7 @@ class ShopCommand extends BaseCommand
     {
         $form = new CustomForm(function (Player $player, ?array $data) use ($item): void {
             if ($data !== null) {
-                if (!is_numeric($data[1])) {
+                if (!is_numeric($data[1]) || (int)$data[1] < 0) {
                     $player->sendMessage(TextFormat::RED . "Amount must be numeric.");
                     return;
                 }

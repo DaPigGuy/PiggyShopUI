@@ -1,11 +1,26 @@
-# PiggyShopUI [![Poggit-CI](https://poggit.pmmp.io/ci.badge/DaPigGuy/PiggyShopUI/PiggyShopUI/master)](https://poggit.pmmp.io/ci/DaPigGuy/PiggyShopUI/~) 
+# PiggyShopUI [![Poggit-CI](https://poggit.pmmp.io/shield.dl/PiggyShopUI)](https://poggit.pmmp.io/p/PiggyShopUI) [![Discord](https://img.shields.io/discord/330850307607363585?logo=discord)](https://discord.gg/qmnDsSD)
 
 PiggyShopUI is an open-sourced plugin using [libFormAPI](https://github.com/jojoe77777/FormAPI) to create form shops.
 
-## Supported Economy Plugins
-* [EconomyAPI](https://github.com/onebone/EconomyS/tree/3.x/EconomyAPI) by onebone
-* [MultiEconomy](https://github.com/TwistedAsylumMC/MultiEconomy) by TwistedAsylumMC
-* Or, you can use player experience as a monetary value.
+## Prerequisites
+* Basic knowledge on how to install plugins from Poggit Releases and/or Poggit CI
+* PMMP 3.2.0 or greater
+* Economy type supported by libPiggyEconomy:
+  * [EconomyAPI](https://github.com/onebone/EconomyS/tree/3.x/EconomyAPI) by onebone
+  * [MultiEconomy](https://github.com/TwistedAsylumMC/MultiEconomy) by TwistedAsylumMC
+  * PMMP Player EXP
+
+## Installation & Setup
+1. Install the plugin from Poggit.
+2. (Optional) Setup your economy provider. If using EconomyAPI, this step can be skipped. Otherwise, change `economy.provider` to the name of the economy plugin being used, or `xp` for PMMP Player EXP. If using MultiEconomy, create `economy.multieconomy-currency` with the value being your preferred currency type.
+3. Start your server.
+4. The command `/shop edit` opens up the shop editor menu. Run it.
+5. PiggyShopUI separates individual shop entries by categories. Create a category.
+6. PiggyShopUI allows you to add shop items from your inventory. Get the items you plan on selling.
+7. Open the shop editor menu and select a category to edit. This will open up the shop category editor menu.
+8. Add an item to the category.
+9. Repeat w/ other items & categories.
+10. You're done! No restarts are necessary.
 
 ## Commands
 | Command | Description | Permissions | Aliases
@@ -33,10 +48,10 @@ PiggyShopUI is an open-sourced plugin using [libFormAPI](https://github.com/jojo
 * We do not support any spoons of PocketMine-MP. Anything to do with spoons (Issues or PRs) will be ignored.
   * This includes plugins that modify PocketMine-MP's behavior directly, such as TeaSpoon.
 
-## Information
+## Additional Information
 * We do not support any spoons. Anything to do with spoons (Issues or PRs) will be ignored.
 * We are using the following virions: [Commando](https://github.com/CortexPE/Commando), [libFormAPI](https://github.com/jojoe77777/FormAPI), and [libPiggyEconomy](https://github.com/DaPigGuy/libPiggyEconomy).
-    * **You MUST use the pre-compiled phar from [Poggit-CI](https://poggit.pmmp.io/ci/DaPigGuy/PiggyShopUI/~) instead of GitHub.**
+    * **Unless you know what you are doing, use the pre-compiled phar from [Poggit-CI](https://poggit.pmmp.io/ci/DaPigGuy/PiggyShopUI/~) and not GitHub.**
     * If you wish to run it via source, check out [DEVirion](https://github.com/poggit/devirion).
 * Check out our [Discord Server](https://discord.gg/qmnDsSD) for additional plugin support.
 

@@ -140,6 +140,9 @@ class ShopCommand extends BaseCommand
         $form->setTitle(str_replace(["{COUNT}", "{ITEM}"], [$item->getItem()->getCount(), $item->getItem()->getName()], $this->plugin->getConfig()->getNested("messages.menu.item-page-title")));
         $form->addLabel(
             (empty($item->getDescription()) ? "" : $item->getDescription() . "\n\n") .
+            (str_replace(["{BALANCE}", "{OWNED}"], [$this->plugin->getEconomyProvider()->getMoney($player), array_sum(array_map(function (Item $item): int {
+                return $item->getCount();
+            }, $player->getInventory()->all($item->getItem())))], $this->plugin->getConfig()->getNested("messages.menu.player-info", ""))) . "\n" .
             (str_replace("{PRICE}", (string)$item->getBuyPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-purchase-price"))) . "\n" .
             ($item->canSell() ? (str_replace("{PRICE}", (string)$item->getSellPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-sell-price"))) : "")
         );

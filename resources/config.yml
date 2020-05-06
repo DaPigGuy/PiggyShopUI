@@ -9,6 +9,7 @@ messages:
     category-page-title: "PiggyShopUI Shop - {CATEGORY}"
     item-button: "{COUNT}x {ITEM}"
     item-page-title: "{COUNT}x {ITEM}"
+    player-info: "Your Balance: ${BALANCE}\nOwned: {OWNED}x\n"
     item-purchase-price: "Purchase Price: {PRICE}"
     item-sell-price: "Sell Price: {PRICE}"
   buy:

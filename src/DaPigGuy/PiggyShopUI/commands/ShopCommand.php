@@ -91,7 +91,7 @@ class ShopCommand extends BaseCommand
         });
         $form->setTitle(str_replace("{CATEGORY}", $category->getName(), $this->plugin->getConfig()->getNested("messages.menu.category-page-title")));
         foreach ($items as $item) {
-            $form->addButton(str_replace(["{COUNT}", "{ITEM}"], [$item->getItem()->getCount(), $item->getItem()->getName()], $this->plugin->getConfig()->getNested("messages.menu.item-button")), $item->getImageType(), $item->getImagePath());
+            $form->addButton(str_replace(["{COUNT}", "{ITEM}", "{BUYPRICE}", "{SELLPRICE}"], [$item->getItem()->getCount(), $item->getItem()->getName(), $item->getBuyPrice(), $item->getSellPrice()], $this->plugin->getConfig()->getNested("messages.menu.item-button")), $item->getImageType(), $item->getImagePath());
         }
         $player->sendForm($form);
     }

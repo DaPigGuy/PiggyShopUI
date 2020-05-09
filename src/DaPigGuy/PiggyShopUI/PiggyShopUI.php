@@ -122,7 +122,7 @@ class PiggyShopUI extends PluginBase
         return $this->economyProvider;
     }
 
-    public function getNameByDamage(int $itemId, int $damage): ?string
+    public function getNameByDamage(int $itemId, int $damage): string
     {
         if ($itemId === Item::BUCKET) {
             $name = ["Bucket", "Milk", "Cod", "Salmon", "Tropical Fish", "Pufferfish", "", "", "Water", "", "Lava"];
@@ -140,6 +140,6 @@ class PiggyShopUI extends PluginBase
             $name = ["White", "Orange", "Magenta", "Light Blue", "Yellow", "Lime", "Pink", "Gray", "Light Gray", "Cyan", "Purple", "Blue", "Brown", "Green", "Red", "Black"];
             return $name[$damage];
         }
-        return null;
+        return "";
     }
 }

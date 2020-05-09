@@ -98,7 +98,7 @@ class ShopCommand extends BaseCommand
                 if ($itemId === Item::BUCKET) {
                     if ($itemDamage <= 1) {
                         $item->getItem()->setCustomName($this->plugin->getNameByDamage(Item::BUCKET, $itemDamage));
-                    } elseif ($itemDamage >= 2 && $itemDamage <= 5) {
+                    } elseif ($itemDamage <= 5) {
                         $item->getItem()->setCustomName("Bucket of " . $this->plugin->getNameByDamage(Item::BUCKET, $itemDamage));
                     } elseif ($itemDamage === 8 || $itemDamage === 10) {
                         $item->getItem()->setCustomName($this->plugin->getNameByDamage(Item::BUCKET, $itemDamage) . " Bucket");

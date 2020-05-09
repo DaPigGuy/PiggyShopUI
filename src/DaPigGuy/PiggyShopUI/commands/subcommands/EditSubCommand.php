@@ -56,7 +56,6 @@ class EditSubCommand extends BaseSubCommand
 
     public function showAddCategoryPage(Player $player): void
     {
-        $items = array_values($player->getInventory()->getContents());
         $form = new CustomForm(function (Player $player, ?array $data): void {
             if ($data !== null) {
                 if ($this->plugin->getShopCategory($data[0]) !== null) {
@@ -136,7 +135,7 @@ class EditSubCommand extends BaseSubCommand
                 $player->sendMessage(TextFormat::GREEN . "Item successfully added.");
             }
         });
-        $form->setTitle("Add '" . $category->getName() . "'Category Item");
+        $form->setTitle("Add '" . $category->getName() . "' Category Item");
         $form->addDropdown("Item", array_map(function (Item $item): string {
             return $item->getName();
         }, $items));

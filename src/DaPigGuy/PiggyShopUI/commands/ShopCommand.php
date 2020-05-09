@@ -91,7 +91,38 @@ class ShopCommand extends BaseCommand
         });
         $form->setTitle(str_replace("{CATEGORY}", $category->getName(), $this->plugin->getConfig()->getNested("messages.menu.category-page-title")));
         foreach ($items as $item) {
-            $form->addButton(str_replace(["{COUNT}", "{ITEM}", "{BUYPRICE}", "{SELLPRICE}"], [$item->getItem()->getCount(), $item->getItem()->getName(), $item->getBuyPrice(), $item->getSellPrice()], $this->plugin->getConfig()->getNested("messages.menu.item-button")), $item->getImageType(), $item->getImagePath());
+            $name = $item->getItem()->getName();
+            if (!$item->getItem()->hasCustomName()) {
+                $itemId = $item->getItem()->getId();
+                $itemDamage = $item->getItem()->getDamage();
+                if ($itemId === Item::BUCKET) {
+                    if ($itemDamage <= 1) {
+                        $item->getItem()->setCustomName($this->plugin->getNameByDamage(Item::BUCKET, $itemDamage));
+                    } elseif ($itemDamage >= 2 && $itemDamage <= 5) {
+                        $item->getItem()->setCustomName("Bucket of " . $this->plugin->getNameByDamage(Item::BUCKET, $itemDamage));
+                    } elseif ($itemDamage === 8 || $itemDamage === 10) {
+                        $item->getItem()->setCustomName($this->plugin->getNameByDamage(Item::BUCKET, $itemDamage) . " Bucket");
+                    }
+                    $name = $item->getItem()->getCustomName();
+                }
+                if ($itemId === Item::DYE) {
+                    $item->getItem()->setCustomName($this->plugin->getNameByDamage(Item::DYE, $itemDamage) . " Dye");
+                    $name = $item->getItem()->getCustomName();
+                }
+                if ($itemId === Item::POTION || $itemId === Item::SPLASH_POTION) {
+                    if ($item->getItem()->getDamage() <= 4) {
+                        $item->getItem()->setCustomName($this->plugin->getNameByDamage(Item::POTION, $itemDamage) . (($itemId === Item::SPLASH_POTION) ? " Splash" : "") . " Potion");
+                    } else {
+                        $item->getItem()->setCustomName((($itemId === Item::SPLASH_POTION) ? "Splash " : "") . "Potion of " . $this->plugin->getNameByDamage(Item::POTION, $itemDamage));
+                    }
+                    $name = $item->getItem()->getCustomName();
+                }
+                if ($itemId === Item::TERRACOTTA) {
+                    $item->getItem()->setCustomName($this->plugin->getNameByDamage(Item::TERRACOTTA, $itemDamage) . " Terracotta");
+                    $name = $item->getItem()->getCustomName();
+                }
+            }
+            $form->addButton(str_replace(["{COUNT}", "{ITEM}", "{BUYPRICE}", "{SELLPRICE}"], [$item->getItem()->getCount(), $name, $item->getBuyPrice(), $item->getSellPrice()], $this->plugin->getConfig()->getNested("messages.menu.item-button")), $item->getImageType(), $item->getImagePath());
         }
         $player->sendForm($form);
     }
@@ -110,6 +141,9 @@ class ShopCommand extends BaseCommand
                         return;
                     }
                     $purchasedItem = clone $item->getItem();
+                    if ($purchasedItem->hasCustomName()) {
+                        if ($purchasedItem->getId() === Item::BUCKET || $purchasedItem->getId() === Item::DYE || $purchasedItem->getId() === Item::POTION || $purchasedItem->getId() === Item::SPLASH_POTION || $purchasedItem->getId() === Item::TERRACOTTA) $purchasedItem->clearCustomName();
+                    }
                     $purchasedItem->setCount($purchasedItem->getCount() * (int)$data[1]);
                     if (!$player->getInventory()->canAddItem($purchasedItem)) {
                         $player->sendMessage($this->plugin->getConfig()->getNested("messages.buy.not-enough-space"));
@@ -127,7 +161,6 @@ class ShopCommand extends BaseCommand
                         foreach ($player->getInventory()->all($offeredItems) as $i) {
                             $total += $i->getCount();
                         }
-
                         $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{DIFFERENCE}"], [$offeredItems->getCount(), $offeredItems->getName(), $offeredItems->getCount() - $total], $this->plugin->getConfig()->getNested("messages.sell.not-enough-items")));
                         return;
                     }

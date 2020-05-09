@@ -104,7 +104,6 @@ class PiggyShopUI extends PluginBase
         $this->saveToShopConfig();
     }
 
-
     public function getShopCategory(string $name): ?ShopCategory
     {
         return $this->shopCategories[$name] ?? null;
@@ -121,5 +120,26 @@ class PiggyShopUI extends PluginBase
     public function getEconomyProvider(): EconomyProvider
     {
         return $this->economyProvider;
+    }
+
+    public function getNameByDamage(int $itemId, int $damage): ?string
+    {
+        if ($itemId === Item::BUCKET) {
+            $name = ["Bucket", "Milk", "Cod", "Salmon", "Tropical Fish", "Pufferfish", "", "", "Water", "", "Lava"];
+            return $name[$damage];
+        }
+        if ($itemId === Item::DYE) {
+            $name = ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"];
+            return $name[$damage];
+        }
+        if ($itemId === Item::POTION || $itemId === Item::SPLASH_POTION) {
+            $name = ["Water", "Mundane", "Long Mundane", "Thick", "Awkward", "Night Vision", "Night Vision", "Invisibility", "Invisibility", "Leaping", "Leaping", "Leaping", "Fire Resistance", "Fire Resistance", "Swiftness", "Swiftness", "Swiftness", "Slowness", "Slowness", "Water Breathing", "Water Breathing", "Healing", "Healing", "Harming", "Harming", "Poison", "Poison", "Regeneration", "Regeneration", "Regeneration", "Strength", "Strength", "Strength", "Weakness", "Weakness", "Wither"];
+            return $name[$damage];
+        }
+        if ($itemId === Item::TERRACOTTA) {
+            $name = ["White", "Orange", "Magenta", "Light Blue", "Yellow", "Lime", "Pink", "Gray", "Light Gray", "Cyan", "Purple", "Blue", "Brown", "Green", "Red", "Black"];
+            return $name[$damage];
+        }
+        return null;
     }
 }

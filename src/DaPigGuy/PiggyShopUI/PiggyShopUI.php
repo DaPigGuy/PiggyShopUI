@@ -46,7 +46,7 @@ class PiggyShopUI extends PluginBase
             ] as $virion => $class
         ) {
             if (!class_exists($class)) {
-                $this->getLogger()->error($virion . " virion not found. Please download PiggyCustomEnchantsShop from Poggit-CI or use DEVirion (not recommended).");
+                $this->getLogger()->error($virion . " virion not found. Please download PiggyShopUI from Poggit-CI or use DEVirion (not recommended).");
                 $this->getServer()->getPluginManager()->disablePlugin($this);
                 return;
             }

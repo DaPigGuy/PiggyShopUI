@@ -136,7 +136,7 @@ class ShopCommand extends BaseCommand
                     return;
                 }
                 if (!$item->canSell() || !$data[2]) {
-                    if ($this->plugin->getEconomyProvider()->getMoney($player) < (int)$data[1] * $item->getBuyPrice()) {
+                    if ($this->plugin->getEconomyProvider()->getMoney($player) < $item->getBuyPrice() * (int)$data[1]) {
                         $player->sendMessage(str_replace(["{PRICE}", "{DIFFERENCE}"], [$item->getBuyPrice() * (int)$data[1], $item->getBuyPrice() * (int)$data[1] - $this->plugin->getEconomyProvider()->getMoney($player)], $this->plugin->getConfig()->getNested("messages.buy.not-enough-money")));
                         return;
                     }

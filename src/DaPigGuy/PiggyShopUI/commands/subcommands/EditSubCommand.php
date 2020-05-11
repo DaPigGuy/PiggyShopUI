@@ -130,7 +130,7 @@ class EditSubCommand extends BaseSubCommand
                     $player->sendMessage(TextFormat::RED . "Prices must be numeric.");
                     return;
                 }
-                $shopItem = new ShopItem($items[$data[0]], $data[2], (int)$data[3], $data[4], (int)$data[6] ?? 0, $data[7] - 1, $data[8]);
+                $shopItem = new ShopItem($items[$data[0]], $data[2], (float)$data[3], $data[4], (float)$data[6] ?? 0, $data[7] - 1, $data[8]);
                 $category->addItem($shopItem);
                 $player->sendMessage(TextFormat::GREEN . "Item successfully added.");
             }
@@ -178,9 +178,9 @@ class EditSubCommand extends BaseSubCommand
                     return;
                 }
                 $item->setDescription($data[0]);
-                $item->setBuyPrice((int)$data[1]);
+                $item->setBuyPrice((float)$data[1]);
                 $item->setCanSell($data[2]);
-                $item->setSellPrice((int)$data[3]);
+                $item->setSellPrice((float)$data[3]);
                 $item->setImageType($data[4] - 1);
                 $item->setImagePath($data[5]);
                 $player->sendMessage(TextFormat::GREEN . "Item updated successfully.");

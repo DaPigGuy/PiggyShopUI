@@ -38,20 +38,18 @@ class PiggyShopUI extends PluginBase
      */
     public function onEnable(): void
     {
-        if (!class_exists(BaseCommand::class)) {
-            $this->getLogger()->error("Commando virion not found. Please download PiggyShopUI from Poggit-CI or use DEVirion (not recommended).");
-            $this->getServer()->getPluginManager()->disablePlugin($this);
-            return;
-        }
-        if (!class_exists(Form::class)) {
-            $this->getLogger()->error("libformapi virion not found. Please download PiggyShopUI from Poggit-CI or use DEVirion (not recommended).");
-            $this->getServer()->getPluginManager()->disablePlugin($this);
-            return;
-        }
-        if (!class_exists(libPiggyEconomy::class)) {
-            $this->getLogger()->error("libPiggyEconomy virion not found. Please download PiggyShopUI from Poggit-CI or use DEVirion (not recommended).");
-            $this->getServer()->getPluginManager()->disablePlugin($this);
-            return;
+        foreach (
+            [
+                "libPiggyEconomy" => libPiggyEconomy::class,
+                "Commando" => BaseCommand::class,
+                "libformapi" => Form::class
+            ] as $virion => $class
+        ) {
+            if (!class_exists($class)) {
+                $this->getLogger()->error($virion . " virion not found. Please download PiggyCustomEnchantsShop from Poggit-CI or use DEVirion (not recommended).");
+                $this->getServer()->getPluginManager()->disablePlugin($this);
+                return;
+            }
         }
 
         self::$instance = $this;

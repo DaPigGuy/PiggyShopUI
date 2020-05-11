@@ -15,6 +15,6 @@ If you are submitting a pull request, you must:
 * Use same formatting
 * Changes must have been tested on PMMP.
 * Unless it is a minor code modification, you must use an IDE.
-* Have a detailed title, like "Fix Bought items do not appear in inventory"
+* Have a detailed title.
 
 <i>Last updated: Sunday, March 15, 2020.</i>

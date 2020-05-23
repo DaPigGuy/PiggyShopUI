@@ -13,11 +13,11 @@ class ShopItem
     public $item;
     /** @var string */
     private $description;
-    /** @var int */
+    /** @var float */
     public $buyPrice;
     /** @var bool */
     public $canSell;
-    /** @var int */
+    /** @var float */
     public $sellPrice;
 
     /** @var int */
@@ -25,7 +25,7 @@ class ShopItem
     /** @var string */
     public $imagePath;
 
-    public function __construct(Item $item, string $description, int $buyPrice, bool $canSell, int $sellPrice, int $imageType, string $imagePath)
+    public function __construct(Item $item, string $description, float $buyPrice, bool $canSell, float $sellPrice, int $imageType, string $imagePath)
     {
         $this->item = $item;
         $this->description = $description;
@@ -52,12 +52,12 @@ class ShopItem
         PiggyShopUI::getInstance()->saveToShopConfig();
     }
 
-    public function getBuyPrice(): int
+    public function getBuyPrice(): float
     {
         return $this->buyPrice;
     }
 
-    public function setBuyPrice(int $buyPrice): void
+    public function setBuyPrice(float $buyPrice): void
     {
         $this->buyPrice = $buyPrice;
         PiggyShopUI::getInstance()->saveToShopConfig();
@@ -74,12 +74,12 @@ class ShopItem
         PiggyShopUI::getInstance()->saveToShopConfig();
     }
 
-    public function getSellPrice(): int
+    public function getSellPrice(): float
     {
         return $this->sellPrice;
     }
 
-    public function setSellPrice(int $sellPrice): void
+    public function setSellPrice(float $sellPrice): void
     {
         $this->sellPrice = $sellPrice;
         PiggyShopUI::getInstance()->saveToShopConfig();

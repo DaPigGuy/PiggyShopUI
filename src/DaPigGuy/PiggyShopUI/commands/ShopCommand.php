@@ -6,7 +6,6 @@ namespace DaPigGuy\PiggyShopUI\commands;
 
 use CortexPE\Commando\BaseCommand;
 use CortexPE\Commando\exception\ArgumentOrderException;
-use CortexPE\Commando\exception\SubCommandCollision;
 use DaPigGuy\PiggyShopUI\commands\enum\ShopCategoryEnum;
 use DaPigGuy\PiggyShopUI\commands\subcommands\EditSubCommand;
 use DaPigGuy\PiggyShopUI\PiggyShopUI;
@@ -15,11 +14,13 @@ use DaPigGuy\PiggyShopUI\shops\ShopItem;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\command\CommandSender;
+use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\item\Item;
 use pocketmine\Player;
+use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 
-class ShopCommand extends BaseCommand
+class ShopCommand extends BaseCommand implements PluginIdentifiableCommand
 {
     /** @var PiggyShopUI */
     private $plugin;
@@ -34,6 +35,11 @@ class ShopCommand extends BaseCommand
     {
         $this->plugin = $plugin;
         parent::__construct($name, $description, $aliases);
+    }
+
+    public function getPlugin(): Plugin
+    {
+        return $this->plugin;
     }
 
     /**
@@ -145,7 +151,7 @@ class ShopCommand extends BaseCommand
                     return;
                 }
                 if (!$item->canSell() || !$data[2]) {
-                    if ($this->plugin->getEconomyProvider()->getMoney($player) < (int)$data[1] * $item->getBuyPrice()) {
+                    if ($this->plugin->getEconomyProvider()->getMoney($player) < $item->getBuyPrice() * (int)$data[1]) {
                         $player->sendMessage(str_replace(["{PRICE}", "{DIFFERENCE}"], [$item->getBuyPrice() * (int)$data[1], $item->getBuyPrice() * (int)$data[1] - $this->plugin->getEconomyProvider()->getMoney($player)], $this->plugin->getConfig()->getNested("messages.buy.not-enough-money")));
                         return;
                     }
@@ -191,7 +197,6 @@ class ShopCommand extends BaseCommand
     }
 
     /**
-     * @throws SubCommandCollision
      * @throws ArgumentOrderException
      */
     protected function prepare(): void

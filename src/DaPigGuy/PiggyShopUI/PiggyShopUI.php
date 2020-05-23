@@ -124,12 +124,16 @@ class PiggyShopUI extends PluginBase
 
     public function getNameByDamage(int $itemId, int $damage): string
     {
+        if ($itemId === Item::BANNER) {
+            $name = ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White"];
+            return $name[$damage];
+        }
         if ($itemId === Item::BUCKET) {
             $name = ["Bucket", "Milk", "Cod", "Salmon", "Tropical Fish", "Pufferfish", "", "", "Water", "", "Lava"];
             return $name[$damage];
         }
         if ($itemId === Item::DYE) {
-            $name = ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"];
+            $name = ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "Bone Meal", "Black", "Brown", "Blue", "White"];
             return $name[$damage];
         }
         if ($itemId === Item::POTION || $itemId === Item::SPLASH_POTION) {

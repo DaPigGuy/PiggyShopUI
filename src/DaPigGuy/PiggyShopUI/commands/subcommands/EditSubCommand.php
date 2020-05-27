@@ -8,6 +8,7 @@ use CortexPE\Commando\BaseSubCommand;
 use DaPigGuy\PiggyShopUI\PiggyShopUI;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
 use DaPigGuy\PiggyShopUI\shops\ShopItem;
+use DaPigGuy\PiggyShopUI\shops\ShopSubcategory;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\command\CommandSender;
@@ -32,6 +33,11 @@ class EditSubCommand extends BaseSubCommand
             $sender->sendMessage(TextFormat::RED . "Please use this in-game.");
             return;
         }
+        $this->showMainPage($sender);
+    }
+
+    public function showMainPage(Player $player): void
+    {
         $form = new SimpleForm(function (Player $player, ?int $data): void {
             if ($data !== null) {
                 switch ($data) {
@@ -51,7 +57,7 @@ class EditSubCommand extends BaseSubCommand
         $form->addButton("Add Category");
         $form->addButton("Edit Category");
         $form->addButton("Remove Category");
-        $sender->sendForm($form);
+        $player->sendForm($form);
     }
 
     public function showAddCategoryPage(Player $player): void
@@ -66,9 +72,10 @@ class EditSubCommand extends BaseSubCommand
                     $player->sendMessage(TextFormat::RED . "'" . $data[0] . "' is an invalid shop category name.");
                     return;
                 }
-                $this->plugin->addShopCategory(new ShopCategory($data[0], [], $data[1], $data[2] - 1, $data[3]));
+                $this->plugin->addShopCategory(new ShopCategory($data[0], [], [], $data[1], $data[2] - 1, $data[3]));
                 $player->sendMessage(TextFormat::GREEN . "Shop category " . $data[0] . " created successfully.");
             }
+            $this->showMainPage($player);
         });
         $form->setTitle("Add Shop Category");
         $form->addInput("Name");
@@ -83,6 +90,10 @@ class EditSubCommand extends BaseSubCommand
         $categories = $this->plugin->getShopCategories();
         $form = new SimpleForm(function (Player $player, ?int $data) use ($categories): void {
             if ($data !== null) {
+                if ($data === count($categories)) {
+                    $this->showMainPage($player);
+                    return;
+                }
                 $this->showEditCategoryPage($player, $categories[array_keys($categories)[$data]]);
             }
         });
@@ -90,6 +101,7 @@ class EditSubCommand extends BaseSubCommand
         foreach ($categories as $category) {
             $form->addButton($category->getName());
         }
+        $form->addButton("Back");
         $player->sendForm($form);
     }
 
@@ -108,7 +120,23 @@ class EditSubCommand extends BaseSubCommand
                         $this->showRemoveCategoryItemPage($player, $category);
                         break;
                     case 3:
+                        $this->showAddCategorySubcategoryPage($player, $category);
+                        break;
+                    case 4:
+                        $this->showEditCategorySubcategoriesPage($player, $category);
+                        break;
+                    case 5:
+                        $this->showRemoveCategorySubcategoryPage($player, $category);
+                        break;
+                    case 6:
                         $this->showEditCategorySettingsPage($player, $category);
+                        break;
+                    case 7:
+                        if ($category instanceof ShopSubcategory) {
+                            $this->showEditCategorySubcategoriesPage($player, $category->getParent());
+                            break;
+                        }
+                        $this->showEditCategoriesPage($player);
                         break;
                 }
             }
@@ -117,7 +145,11 @@ class EditSubCommand extends BaseSubCommand
         $form->addButton("Add Item");
         $form->addButton("Edit Item");
         $form->addButton("Remove Item");
+        $form->addButton("Add Subcategory");
+        $form->addButton("Edit Subcategory");
+        $form->addButton("Remove Subcategory");
         $form->addButton("Edit Settings");
+        $form->addButton("Back");
         $player->sendForm($form);
     }
 
@@ -134,6 +166,7 @@ class EditSubCommand extends BaseSubCommand
                 $category->addItem($shopItem);
                 $player->sendMessage(TextFormat::GREEN . "Item successfully added.");
             }
+            $this->showEditCategoryPage($player, $category);
         });
         $form->setTitle("Add '" . $category->getName() . "' Category Item");
         $form->addDropdown("Item", array_map(function (Item $item): string {
@@ -157,21 +190,26 @@ class EditSubCommand extends BaseSubCommand
             $player->sendMessage(TextFormat::RED . "No items exist within this category.");
             return;
         }
-        $form = new SimpleForm(function (Player $player, ?int $data) use ($items): void {
+        $form = new SimpleForm(function (Player $player, ?int $data) use ($category, $items): void {
             if ($data !== null) {
-                $this->showEditCategoryItemPage($player, $items[array_keys($items)[$data]]);
+                if ($data === count($items)) {
+                    $this->showEditCategoryPage($player, $category);
+                    return;
+                }
+                $this->showEditCategoryItemPage($player, $category, $items[array_keys($items)[$data]]);
             }
         });
         $form->setTitle("Edit '" . $category->getName() . "' Category Items");
         foreach ($items as $item) {
             $form->addButton($item->getItem()->getName());
         }
+        $form->addButton("Back");
         $player->sendForm($form);
     }
 
-    public function showEditCategoryItemPage(Player $player, ShopItem $item): void
+    public function showEditCategoryItemPage(Player $player, ShopCategory $category, ShopItem $item): void
     {
-        $form = new CustomForm(function (Player $player, ?array $data) use ($item): void {
+        $form = new CustomForm(function (Player $player, ?array $data) use ($category, $item): void {
             if ($data !== null) {
                 if (!is_numeric($data[1]) || !is_numeric($data[3])) {
                     $player->sendMessage(TextFormat::RED . "Prices must be numeric.");
@@ -185,6 +223,7 @@ class EditSubCommand extends BaseSubCommand
                 $item->setImagePath($data[5]);
                 $player->sendMessage(TextFormat::GREEN . "Item updated successfully.");
             }
+            $this->showEditCategoryPage($player, $category);
         });
         $form->setTitle("Edit Item '" . $item->getItem()->getName() . "'");
         $form->addInput("Description", "", $item->getDescription());
@@ -204,11 +243,78 @@ class EditSubCommand extends BaseSubCommand
                 $category->removeItem($data[0]);
                 $player->sendMessage(TextFormat::GREEN . "Item successfully removed.");
             }
+            $this->showEditCategoryPage($player, $category);
         });
         $form->setTitle("Remove '" . $category->getName() . "' Category Item");
         $form->addDropdown("Item", array_map(function (ShopItem $item): string {
             return $item->getItem()->getName();
         }, $items));
+        $player->sendForm($form);
+    }
+
+    public function showAddCategorySubcategoryPage(Player $player, ShopCategory $category): void
+    {
+        $form = new CustomForm(function (Player $player, ?array $data) use ($category): void {
+            if ($data !== null) {
+                if ($this->plugin->getShopCategory($data[0]) !== null) {
+                    $player->sendMessage(TextFormat::RED . "A subcategory already exists with the name " . $data[0] . ".");
+                    return;
+                }
+                $subcategory = new ShopSubcategory($data[0], [], [], $data[1], $data[2] - 1, $data[3]);
+                $subcategory->setParent($category);
+                $category->addSubCategory($subcategory);
+                $player->sendMessage(TextFormat::GREEN . "Subcategory " . $data[0] . " created successfully.");
+            }
+            $this->showEditCategoryPage($player, $category);
+        });
+        $form->setTitle("Add Shop Subcategory");
+        $form->addInput("Name");
+        $form->addToggle("Private", false);
+        $form->addDropdown("Image Type", ["Disabled", "Path", "URL"]);
+        $form->addInput("Image Path/URL", "");
+        $player->sendForm($form);
+    }
+
+    public function showEditCategorySubcategoriesPage(Player $player, ShopCategory $category): void
+    {
+        $subcategories = $category->getSubCategories();
+        if (count($subcategories) === 0) {
+            $player->sendMessage(TextFormat::RED . "No subcategories exist within this category.");
+            return;
+        }
+        $form = new SimpleForm(function (Player $player, ?int $data) use ($category, $subcategories): void {
+            if ($data !== null) {
+                if ($data === count($subcategories)) {
+                    $this->showEditCategoryPage($player, $category);
+                    return;
+                }
+                $this->showEditCategoryPage($player, $subcategories[array_keys($subcategories)[$data]]);
+                return;
+            }
+            $this->showEditCategoryPage($player, $category);
+        });
+        $form->setTitle("Edit '" . $category->getName() . "' Category Subcategories");
+        foreach ($subcategories as $subcategory) {
+            $form->addButton($subcategory->getName());
+        }
+        $form->addButton("Back");
+        $player->sendForm($form);
+    }
+
+    public function showRemoveCategorySubcategoryPage(Player $player, ShopCategory $category): void
+    {
+        $subcategories = array_values($category->getSubCategories());
+        $form = new CustomForm(function (Player $player, ?array $data) use ($category): void {
+            if ($data !== null) {
+                $category->removeSubCategory($data[0]);
+                $player->sendMessage(TextFormat::GREEN . "Subcategory successfully removed.");
+            }
+            $this->showEditCategoryPage($player, $category);
+        });
+        $form->setTitle("Remove '" . $category->getName() . "' Category Subcategory");
+        $form->addDropdown("Subcategory", array_map(function (ShopCategory $subcategory): string {
+            return $subcategory->getName();
+        }, $subcategories));
         $player->sendForm($form);
     }
 
@@ -234,6 +340,7 @@ class EditSubCommand extends BaseSubCommand
                 $category->setImageType($data[2] - 1);
                 $category->setImagePath($data[3]);
             }
+            $this->showEditCategoryPage($player, $category);
         });
         $form->setTitle("'" . $category->getName() . "' Category Settings");
         $form->addInput("Name", "", $category->getName());
@@ -249,9 +356,11 @@ class EditSubCommand extends BaseSubCommand
         $categories = array_values($this->plugin->getShopCategories());
         $form = new CustomForm(function (Player $player, ?array $data) use ($categories): void {
             if ($data !== null) {
-                $this->plugin->removeShopCategory($categories[$data[0]]);
-                $player->sendMessage(TextFormat::GREEN . "Shop category " . $categories[$data[0]]->getName() . " removed successfully.");
+                $category = $categories[$data[0]];
+                $this->plugin->removeShopCategory($category);
+                $player->sendMessage(TextFormat::GREEN . "Shop category " . $category->getName() . " removed successfully.");
             }
+            $this->showMainPage($player);
         });
         $form->setTitle("Remove Shop Category");
         $form->addDropdown("Category", array_map(function (ShopCategory $category): string {

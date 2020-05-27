@@ -3,18 +3,15 @@
 namespace DaPigGuy\PiggyShopUI;
 
 use CortexPE\Commando\BaseCommand;
-use CortexPE\Commando\exception\HookAlreadyRegistered;
 use CortexPE\Commando\PacketHooker;
-use DaPigGuy\libPiggyEconomy\exceptions\MissingProviderDependencyException;
-use DaPigGuy\libPiggyEconomy\exceptions\UnknownProviderException;
 use DaPigGuy\libPiggyEconomy\libPiggyEconomy;
 use DaPigGuy\libPiggyEconomy\providers\EconomyProvider;
 use DaPigGuy\PiggyShopUI\commands\ShopCommand;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
-use DaPigGuy\PiggyShopUI\shops\ShopItem;
 use DaPigGuy\PiggyShopUI\tasks\CheckUpdatesTask;
 use jojoe77777\FormAPI\Form;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 
@@ -31,11 +28,6 @@ class PiggyShopUI extends PluginBase
     /** @var EconomyProvider */
     public $economyProvider;
 
-    /**
-     * @throws MissingProviderDependencyException
-     * @throws UnknownProviderException
-     * @throws HookAlreadyRegistered
-     */
     public function onEnable(): void
     {
         foreach (
@@ -61,20 +53,23 @@ class PiggyShopUI extends PluginBase
 
         $this->shopConfig = new Config($this->getDataFolder() . "shops.yml");
         foreach ($this->shopConfig->getAll() as $category) {
-            $this->shopCategories[$category["name"]] = new ShopCategory($category["name"], array_map(function (array $item): ShopItem {
-                return new ShopItem(Item::jsonDeserialize($item["item"]), $item["description"], $item["buyPrice"], $item["canSell"], $item["sellPrice"], $item["imageType"] ?? -1, $item["imagePath"] ?? "");
-            }, $category["items"]), $category["private"], $category["imageType"] ?? -1, $category["imagePath"] ?? "");
+            $this->shopCategories[$category["name"]] = ShopCategory::deserialize($category);
         }
 
         if (!PacketHooker::isRegistered()) PacketHooker::register($this);
         $this->getServer()->getCommandMap()->register("piggyshopui", new ShopCommand($this, "shop", "Open the shop menu"));
 
-        $this->getServer()->getAsyncPool()->submitTask(new CheckUpdatesTask($this->getDescription()->getVersion(), $this->getDescription()->getCompatibleApis()[0]));
+        $this->getServer()->getAsyncPool()->submitTask(new CheckUpdatesTask());
     }
 
     public static function getInstance(): PiggyShopUI
     {
         return self::$instance;
+    }
+
+    public function getEconomyProvider(): EconomyProvider
+    {
+        return $this->economyProvider;
     }
 
     public function getShopConfig(): Config
@@ -90,6 +85,19 @@ class PiggyShopUI extends PluginBase
         $this->shopConfig->save();
     }
 
+    /**
+     * @return ShopCategory[]
+     */
+    public function getShopCategories(): array
+    {
+        return $this->shopCategories;
+    }
+
+    public function getShopCategory(string $name): ?ShopCategory
+    {
+        return $this->shopCategories[$name] ?? null;
+    }
+
     public function addShopCategory(ShopCategory $category): void
     {
         $this->shopCategories[$category->getName()] = $category;
@@ -102,46 +110,44 @@ class PiggyShopUI extends PluginBase
         $this->saveToShopConfig();
     }
 
-    public function getShopCategory(string $name): ?ShopCategory
+    public function getNameByDamage(Item $item): string
     {
-        return $this->shopCategories[$name] ?? null;
-    }
+        $types = [
+            ItemIds::BANNER => ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"],
+            ItemIds::BUCKET => ["Bucket", "Milk", "Cod", "Salmon", "Tropical Fish", "Pufferfish", "", "", "Water", "", "Lava"],
+            ItemIds::DYE => ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"],
+            ItemIds::TERRACOTTA => ["White", "Orange", "Magenta", "Light Blue", "Yellow", "Lime", "Pink", "Gray", "Light Gray", "Cyan", "Purple", "Blue", "Brown", "Green", "Red", "Black"]
+        ];
+        if (isset($types[$item->getId()][$item->getDamage()])) {
+            $type = $types[$item->getId()][$item->getDamage()];
+            switch ($item->getId()) {
+                case ItemIds::BANNER:
+                    return $type . " Banner";
+                case ItemIds::BUCKET:
+                    if ($item->getDamage() === 0) {
+                        return $type;
+                    } elseif ($item->getDamage() <= 5) {
+                        return "Bucket of " . $type;
+                    } elseif ($item->getDamage() === 8 || $item->getDamage() === 10) {
+                        return $type . " Bucket";
+                    }
+                    break;
+                case ItemIds::DYE:
+                    return $item->getDamage() === 15 ? $type : $type . " Dye";
+                case ItemIds::TERRACOTTA:
+                    return $type . " Terracotta";
+            }
+        }
 
-    /**
-     * @return ShopCategory[]
-     */
-    public function getShopCategories(): array
-    {
-        return $this->shopCategories;
-    }
+        $potions = ["Water", "Mundane", "Long Mundane", "Thick", "Awkward", "Night Vision", "Night Vision", "Invisibility", "Invisibility", "Leaping", "Leaping", "Leaping", "Fire Resistance", "Fire Resistance", "Swiftness", "Swiftness", "Swiftness", "Slowness", "Slowness", "Water Breathing", "Water Breathing", "Healing", "Healing", "Harming", "Harming", "Poison", "Poison", "Regeneration", "Regeneration", "Regeneration", "Strength", "Strength", "Strength", "Weakness", "Weakness", "Wither"];
+        if ($item->getId() === ItemIds::POTION || $item->getId() === ItemIds::SPLASH_POTION) {
+            if ($item->getDamage() <= 4) {
+                return $potions[$item->getDamage()] . ($item->getId() === ItemIds::SPLASH_POTION ? " Splash" : "") . " Potion";
+            } else {
+                return ($item->getId() === ItemIds::SPLASH_POTION ? " Splash " : "") . "Potion of " . $potions[$item->getDamage()];
+            }
+        }
 
-    public function getEconomyProvider(): EconomyProvider
-    {
-        return $this->economyProvider;
-    }
-
-    public function getNameByDamage(int $itemId, int $damage): string
-    {
-        if ($itemId === Item::BANNER) {
-            $name = ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White"];
-            return $name[$damage];
-        }
-        if ($itemId === Item::BUCKET) {
-            $name = ["Bucket", "Milk", "Cod", "Salmon", "Tropical Fish", "Pufferfish", "", "", "Water", "", "Lava"];
-            return $name[$damage];
-        }
-        if ($itemId === Item::DYE) {
-            $name = ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "Bone Meal", "Black", "Brown", "Blue", "White"];
-            return $name[$damage];
-        }
-        if ($itemId === Item::POTION || $itemId === Item::SPLASH_POTION) {
-            $name = ["Water", "Mundane", "Long Mundane", "Thick", "Awkward", "Night Vision", "Night Vision", "Invisibility", "Invisibility", "Leaping", "Leaping", "Leaping", "Fire Resistance", "Fire Resistance", "Swiftness", "Swiftness", "Swiftness", "Slowness", "Slowness", "Water Breathing", "Water Breathing", "Healing", "Healing", "Harming", "Harming", "Poison", "Poison", "Regeneration", "Regeneration", "Regeneration", "Strength", "Strength", "Strength", "Weakness", "Weakness", "Wither"];
-            return $name[$damage];
-        }
-        if ($itemId === Item::TERRACOTTA) {
-            $name = ["White", "Orange", "Magenta", "Light Blue", "Yellow", "Lime", "Pink", "Gray", "Light Gray", "Cyan", "Purple", "Blue", "Brown", "Green", "Red", "Black"];
-            return $name[$damage];
-        }
-        return "";
+        return $item->getName();
     }
 }

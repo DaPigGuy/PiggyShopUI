@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace DaPigGuy\PiggyShopUI\commands;
 
 use CortexPE\Commando\BaseCommand;
-use CortexPE\Commando\exception\ArgumentOrderException;
 use DaPigGuy\PiggyShopUI\commands\enum\ShopCategoryEnum;
 use DaPigGuy\PiggyShopUI\commands\subcommands\EditSubCommand;
 use DaPigGuy\PiggyShopUI\PiggyShopUI;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
 use DaPigGuy\PiggyShopUI\shops\ShopItem;
+use DaPigGuy\PiggyShopUI\shops\ShopSubcategory;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\command\CommandSender;
@@ -63,12 +63,17 @@ class ShopCommand extends BaseCommand implements PluginIdentifiableCommand
             $this->showCategoryItems($sender, $args["category"]);
             return;
         }
+        $this->showCategories($sender);
+    }
+
+    public function showCategories(Player $player): void
+    {
         /** @var ShopCategory[] $categories */
-        $categories = array_filter($this->plugin->getShopCategories(), function (ShopCategory $category) use ($sender): bool {
-            return !$category->isPrivate() || $sender->hasPermission("piggyshopui.category." . strtolower($category->getName()));
+        $categories = array_filter($this->plugin->getShopCategories(), function (ShopCategory $category) use ($player): bool {
+            return !$category->isPrivate() || $player->hasPermission("piggyshopui.category." . strtolower($category->getName()));
         });
         if (count($categories) === 0) {
-            $sender->sendMessage(TextFormat::RED . "No existing shop categories exist.");
+            $player->sendMessage(TextFormat::RED . "No existing shop categories exist.");
             return;
         }
         $form = new SimpleForm(function (Player $player, ?int $data) use ($categories): void {
@@ -80,71 +85,49 @@ class ShopCommand extends BaseCommand implements PluginIdentifiableCommand
         foreach ($categories as $category) {
             $form->addButton(str_replace("{CATEGORY}", $category->getName(), $this->plugin->getConfig()->getNested("messages.menu.category-button")), $category->getImageType(), $category->getImagePath());
         }
-        $sender->sendForm($form);
+        $player->sendForm($form);
     }
 
     public function showCategoryItems(Player $player, ShopCategory $category): void
     {
-        $items = $category->getItems();
-        if (count($items) === 0) {
-            $player->sendMessage(TextFormat::RED . "No items exist within this category.");
+        $entries = array_merge($category->getSubCategories(), $category->getItems());
+        if (count($entries) === 0) {
+            $player->sendMessage(TextFormat::RED . "No items or subcategories exist within this category.");
             return;
         }
-        $form = new SimpleForm(function (Player $player, ?int $data) use ($items): void {
+        $form = new SimpleForm(function (Player $player, ?int $data) use ($category, $entries): void {
             if ($data !== null) {
-                $this->showItemPage($player, $items[array_keys($items)[$data]]);
+                if ($data === count($entries)) {
+                    if ($category instanceof ShopSubcategory) {
+                        $this->showCategoryItems($player, $category->getParent());
+                        return;
+                    }
+                    $this->showCategories($player);
+                    return;
+                }
+                $entry = $entries[array_keys($entries)[$data]];
+                if ($entry instanceof ShopItem) {
+                    $this->showItemPage($player, $category, $entry);
+                    return;
+                }
+                $this->showCategoryItems($player, $entry);
             }
         });
         $form->setTitle(str_replace("{CATEGORY}", $category->getName(), $this->plugin->getConfig()->getNested("messages.menu.category-page-title")));
-        foreach ($items as $item) {
-            $realItem = clone $item->getItem();
-            $name = $realItem->getName();
-            if (!$realItem->hasCustomName()) {
-                $itemId = $realItem->getId();
-                $itemDamage = $realItem->getDamage();
-                if ($itemId === Item::BANNER) {
-                    $realItem->setCustomName($this->plugin->getNameByDamage(Item::BANNER, $itemDamage) . " Banner");
-                    $name = $realItem->getCustomName();
-                }
-                if ($itemId === Item::BUCKET) {
-                    if ($itemDamage <= 1) {
-                        $realItem->setCustomName($this->plugin->getNameByDamage(Item::BUCKET, $itemDamage));
-                    } elseif ($itemDamage <= 5) {
-                        $realItem->setCustomName("Bucket of " . $this->plugin->getNameByDamage(Item::BUCKET, $itemDamage));
-                    } elseif ($itemDamage === 8 || $itemDamage === 10) {
-                        $realItem->setCustomName($this->plugin->getNameByDamage(Item::BUCKET, $itemDamage) . " Bucket");
-                    }
-                    $name = $realItem->getCustomName();
-                }
-                if ($itemId === Item::DYE) {
-                    if ($realItem->getDamage() === 15) {
-                        $realItem->setCustomName($this->plugin->getNameByDamage(Item::DYE, $itemDamage));
-                    } else {
-                        $realItem->setCustomName($this->plugin->getNameByDamage(Item::DYE, $itemDamage) . " Dye");
-                    }
-                    $name = $realItem->getCustomName();
-                }
-                if ($itemId === Item::POTION || $itemId === Item::SPLASH_POTION) {
-                    if ($realItem->getDamage() <= 4) {
-                        $realItem->setCustomName($this->plugin->getNameByDamage(Item::POTION, $itemDamage) . (($itemId === Item::SPLASH_POTION) ? " Splash" : "") . " Potion");
-                    } else {
-                        $realItem->setCustomName((($itemId === Item::SPLASH_POTION) ? "Splash " : "") . "Potion of " . $this->plugin->getNameByDamage(Item::POTION, $itemDamage));
-                    }
-                    $name = $realItem->getCustomName();
-                }
-                if ($itemId === Item::TERRACOTTA) {
-                    $realItem->setCustomName($this->plugin->getNameByDamage(Item::TERRACOTTA, $itemDamage) . " Terracotta");
-                    $name = $realItem->getCustomName();
-                }
-            }
+        foreach ($category->getSubCategories() as $subcategory) {
+            $form->addButton(str_replace("{SUBCATEGORY}", $subcategory->getName(), $this->plugin->getConfig()->getNested("messages.menu.subcategory-button")), $subcategory->getImageType(), $subcategory->getImagePath());
+        }
+        foreach ($category->getItems() as $item) {
+            $name = $item->getItem()->hasCustomName() ? $item->getItem()->getName() : $this->plugin->getNameByDamage($item->getItem());
             $form->addButton(str_replace(["{COUNT}", "{ITEM}", "{BUYPRICE}", "{SELLPRICE}"], [$item->getItem()->getCount(), $name, $item->getBuyPrice(), $item->getSellPrice()], $this->plugin->getConfig()->getNested("messages.menu.item-button")), $item->getImageType(), $item->getImagePath());
         }
+        $form->addButton("Back");
         $player->sendForm($form);
     }
 
-    public function showItemPage(Player $player, ShopItem $item): void
+    public function showItemPage(Player $player, ShopCategory $category, ShopItem $item): void
     {
-        $form = new CustomForm(function (Player $player, ?array $data) use ($item): void {
+        $form = new CustomForm(function (Player $player, ?array $data) use ($category, $item): void {
             if ($data !== null) {
                 if (!is_numeric($data[1]) || (int)$data[1] < 0) {
                     $player->sendMessage(TextFormat::RED . "Amount must be numeric.");
@@ -181,6 +164,7 @@ class ShopCommand extends BaseCommand implements PluginIdentifiableCommand
                     $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$offeredItems->getCount(), $offeredItems->getName(), $item->getSellPrice() * (int)$data[1]], $this->plugin->getConfig()->getNested("messages.sell.sell-success")));
                 }
             }
+            $this->showCategoryItems($player, $category);
         });
         $form->setTitle(str_replace(["{COUNT}", "{ITEM}"], [$item->getItem()->getCount(), $item->getItem()->getName()], $this->plugin->getConfig()->getNested("messages.menu.item-page-title")));
         $form->addLabel(
@@ -196,9 +180,6 @@ class ShopCommand extends BaseCommand implements PluginIdentifiableCommand
         $player->sendForm($form);
     }
 
-    /**
-     * @throws ArgumentOrderException
-     */
     protected function prepare(): void
     {
         $this->setPermission("piggyshopui.command.shop.use");

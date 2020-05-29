@@ -14,33 +14,14 @@ use DaPigGuy\PiggyShopUI\shops\ShopSubcategory;
 use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\command\CommandSender;
-use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\item\Item;
 use pocketmine\Player;
-use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 
-class ShopCommand extends BaseCommand implements PluginIdentifiableCommand
+class ShopCommand extends BaseCommand
 {
     /** @var PiggyShopUI */
-    private $plugin;
-
-    /**
-     * @param PiggyShopUI $plugin
-     * @param string $name
-     * @param string $description
-     * @param string[] $aliases
-     */
-    public function __construct(PiggyShopUI $plugin, string $name, string $description = "", array $aliases = [])
-    {
-        $this->plugin = $plugin;
-        parent::__construct($name, $description, $aliases);
-    }
-
-    public function getPlugin(): Plugin
-    {
-        return $this->plugin;
-    }
+    protected $plugin;
 
     /**
      * @param array $args

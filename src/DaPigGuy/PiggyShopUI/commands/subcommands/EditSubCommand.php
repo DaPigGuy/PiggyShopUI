@@ -19,13 +19,7 @@ use pocketmine\utils\TextFormat;
 class EditSubCommand extends BaseSubCommand
 {
     /** @var PiggyShopUI */
-    private $plugin;
-
-    public function __construct(PiggyShopUI $plugin, string $name, string $description = "", array $aliases = [])
-    {
-        $this->plugin = $plugin;
-        parent::__construct($name, $description, $aliases);
-    }
+    protected $plugin;
 
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {

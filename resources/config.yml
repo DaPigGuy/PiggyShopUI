@@ -2,21 +2,3 @@ economy:
   provider: EconomyS
   # This is used for the MultiEconomy provider
   multieconomy-currency: ""
-messages:
-  menu:
-    main-title: "PiggyShopUI Shop"
-    category-button: "{CATEGORY}"
-    category-page-title: "PiggyShopUI Shop - {CATEGORY}"
-    subcategory-button: "{SUBCATEGORY}"
-    item-button: "{COUNT}x {ITEM} - ${BUYPRICE}"
-    item-page-title: "{COUNT}x {ITEM}"
-    player-info: "Your Balance: ${BALANCE}\nOwned: {OWNED}x\n"
-    item-purchase-price: "Purchase Price: {PRICE}"
-    item-sell-price: "Sell Price: {PRICE}"
-  buy:
-    not-enough-money: "${PRICE} required. Missing {DIFFERENCE}."
-    not-enough-space: "Your inventory does not contain enough space."
-    buy-success: "Purchase of {COUNT}x {ITEM} for ${PRICE} was successful."
-  sell:
-    not-enough-items: "{COUNT}x {ITEM} required. Missing {DIFFERENCE}x."
-    sell-success: "Sold {COUNT}x {ITEM} for ${PRICE}."

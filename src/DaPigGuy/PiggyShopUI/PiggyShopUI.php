@@ -9,6 +9,7 @@ use DaPigGuy\libPiggyEconomy\providers\EconomyProvider;
 use DaPigGuy\PiggyShopUI\commands\ShopCommand;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
 use DaPigGuy\PiggyShopUI\tasks\CheckUpdatesTask;
+use DaPigGuy\PiggyShopUI\utils\Utils;
 use jojoe77777\FormAPI\Form;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
@@ -19,6 +20,9 @@ class PiggyShopUI extends PluginBase
 {
     /** @var PiggyShopUI */
     public static $instance;
+
+    /** @var Config */
+    private $messages;
 
     /** @var ShopCategory[] */
     public $shopCategories = [];
@@ -46,6 +50,8 @@ class PiggyShopUI extends PluginBase
 
         self::$instance = $this;
 
+        $this->saveResource("messages.yml");
+        $this->messages = new Config($this->getDataFolder() . "messages.yml");
         $this->saveDefaultConfig();
 
         libPiggyEconomy::init();
@@ -65,6 +71,11 @@ class PiggyShopUI extends PluginBase
     public static function getInstance(): PiggyShopUI
     {
         return self::$instance;
+    }
+
+    public function getMessage(string $key, array $tags = []): string
+    {
+        return Utils::translateColorTags(str_replace(array_keys($tags), $tags, $this->messages->getNested($key, $key)));
     }
 
     public function getEconomyProvider(): EconomyProvider

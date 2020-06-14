@@ -1,6 +1,6 @@
 name: PiggyShopUI
 main: DaPigGuy\PiggyShopUI\PiggyShopUI
-version: 2.1.0
+version: 2.1.1
 api: 3.2.0
 load: POSTWORLD
 author: DaPigGuy

@@ -16,7 +16,6 @@ use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\command\CommandSender;
 use pocketmine\item\Item;
 use pocketmine\Player;
-use pocketmine\utils\TextFormat;
 
 class ShopCommand extends BaseCommand
 {
@@ -29,16 +28,16 @@ class ShopCommand extends BaseCommand
     public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
     {
         if (!$sender instanceof Player) {
-            $sender->sendMessage(TextFormat::RED . "Please use this in-game.");
+            $sender->sendMessage($this->plugin->getMessage("command.use-in-game"));
             return;
         }
         if (isset($args["category"])) {
             if (!$args["category"] instanceof ShopCategory) {
-                $sender->sendMessage(TextFormat::RED . "Invalid shop category.");
+                $sender->sendMessage($this->plugin->getMessage("menu.category.invalid"));
                 return;
             }
             if ($args["category"]->isPrivate() && !$sender->hasPermission("piggyshopui.category." . strtolower($args["category"]->getName()))) {
-                $sender->sendMessage(TextFormat::RED . "You do not have permission to view this category.");
+                $sender->sendMessage($this->plugin->getMessage("menu.category.no-permission"));
                 return;
             }
             $this->showCategoryItems($sender, $args["category"]);
@@ -54,7 +53,7 @@ class ShopCommand extends BaseCommand
             return !$category->isPrivate() || $player->hasPermission("piggyshopui.category." . strtolower($category->getName()));
         });
         if (count($categories) === 0) {
-            $player->sendMessage(TextFormat::RED . "No existing shop categories exist.");
+            $player->sendMessage($this->plugin->getMessage("menu.category.no-categories"));
             return;
         }
         $form = new SimpleForm(function (Player $player, ?int $data) use ($categories): void {
@@ -62,9 +61,9 @@ class ShopCommand extends BaseCommand
                 $this->showCategoryItems($player, $categories[array_keys($categories)[$data]]);
             }
         });
-        $form->setTitle($this->plugin->getConfig()->getNested("messages.menu.main-title"));
+        $form->setTitle($this->plugin->getMessage("menu.main-title"));
         foreach ($categories as $category) {
-            $form->addButton(str_replace("{CATEGORY}", $category->getName(), $this->plugin->getConfig()->getNested("messages.menu.category-button")), $category->getImageType(), $category->getImagePath());
+            $form->addButton($this->plugin->getMessage("menu.category.button", ["{CATEGORY}" => $category->getName()]), $category->getImageType(), $category->getImagePath());
         }
         $player->sendForm($form);
     }
@@ -73,7 +72,7 @@ class ShopCommand extends BaseCommand
     {
         $entries = array_merge($category->getSubCategories(), $category->getItems());
         if (count($entries) === 0) {
-            $player->sendMessage(TextFormat::RED . "No items or subcategories exist within this category.");
+            $player->sendMessage($this->plugin->getMessage("menu.category.no-items"));
             return;
         }
         $form = new SimpleForm(function (Player $player, ?int $data) use ($category, $entries): void {
@@ -94,15 +93,15 @@ class ShopCommand extends BaseCommand
                 $this->showCategoryItems($player, $entry);
             }
         });
-        $form->setTitle(str_replace("{CATEGORY}", $category->getName(), $this->plugin->getConfig()->getNested("messages.menu.category-page-title")));
+        $form->setTitle($this->plugin->getMessage("menu.category.page-title", ["{CATEGORY}" => $category->getName()]));
         foreach ($category->getSubCategories() as $subcategory) {
-            $form->addButton(str_replace("{SUBCATEGORY}", $subcategory->getName(), $this->plugin->getConfig()->getNested("messages.menu.subcategory-button")), $subcategory->getImageType(), $subcategory->getImagePath());
+            $form->addButton($this->plugin->getMessage("menu.subcategory.button", ["{SUBCATEGORY}" => $subcategory->getName()]), $subcategory->getImageType(), $subcategory->getImagePath());
         }
         foreach ($category->getItems() as $item) {
             $name = $item->getItem()->hasCustomName() ? $item->getItem()->getName() : $this->plugin->getNameByDamage($item->getItem());
-            $form->addButton(str_replace(["{COUNT}", "{ITEM}", "{BUYPRICE}", "{SELLPRICE}"], [$item->getItem()->getCount(), $name, $item->getBuyPrice(), $item->getSellPrice()], $this->plugin->getConfig()->getNested("messages.menu.item-button")), $item->getImageType(), $item->getImagePath());
+            $form->addButton($this->plugin->getMessage("menu.item.button", ["{COUNT}" => $item->getItem()->getCount(), "{ITEM}" => $name, "{BUYPRICE}" => $item->getBuyPrice(), "{SELLPRICE}" => $item->getSellPrice()]), $item->getImageType(), $item->getImagePath());
         }
-        $form->addButton("Back");
+        $form->addButton($this->plugin->getMessage("menu.back-button"));
         $player->sendForm($form);
     }
 
@@ -111,23 +110,23 @@ class ShopCommand extends BaseCommand
         $form = new CustomForm(function (Player $player, ?array $data) use ($category, $item): void {
             if ($data !== null) {
                 if (!is_numeric($data[1]) || (int)$data[1] < 0) {
-                    $player->sendMessage(TextFormat::RED . "Amount must be numeric.");
+                    $player->sendMessage($this->plugin->getMessage("menu.item.numeric"));
                     return;
                 }
                 if (!$item->canSell() || !$data[2]) {
                     if ($this->plugin->getEconomyProvider()->getMoney($player) < $item->getBuyPrice() * (int)$data[1]) {
-                        $player->sendMessage(str_replace(["{PRICE}", "{DIFFERENCE}"], [$item->getBuyPrice() * (int)$data[1], $item->getBuyPrice() * (int)$data[1] - $this->plugin->getEconomyProvider()->getMoney($player)], $this->plugin->getConfig()->getNested("messages.buy.not-enough-money")));
+                        $player->sendMessage($this->plugin->getMessage("buy.not-enough-money", ["{PRICE}" => $item->getBuyPrice() * (int)$data[1], "{DIFFERENCE}" => $item->getBuyPrice() * (int)$data[1] - $this->plugin->getEconomyProvider()->getMoney($player)]));
                         return;
                     }
                     $purchasedItem = clone $item->getItem();
                     $purchasedItem->setCount($purchasedItem->getCount() * (int)$data[1]);
                     if (!$player->getInventory()->canAddItem($purchasedItem)) {
-                        $player->sendMessage($this->plugin->getConfig()->getNested("messages.buy.not-enough-space"));
+                        $player->sendMessage($this->plugin->getMessage("buy.not-enough-space"));
                         return;
                     }
                     $player->getInventory()->addItem($purchasedItem);
                     $this->plugin->getEconomyProvider()->takeMoney($player, $item->getBuyPrice() * (int)$data[1]);
-                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$purchasedItem->getCount(), $purchasedItem->getName(), $item->getBuyPrice() * (int)$data[1]], $this->plugin->getConfig()->getNested("messages.buy.buy-success")));
+                    $player->sendMessage($this->plugin->getMessage("buy.buy-success", ["{COUNT}" => $purchasedItem->getCount(), "{ITEM}" => $purchasedItem->getName(), "{PRICE}" => $item->getBuyPrice() * (int)$data[1]]));
                 } else {
                     $offeredItems = clone $item->getItem();
                     $offeredItems->setCount($offeredItems->getCount() * (int)$data[1]);
@@ -137,24 +136,24 @@ class ShopCommand extends BaseCommand
                         foreach ($player->getInventory()->all($offeredItems) as $i) {
                             $total += $i->getCount();
                         }
-                        $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{DIFFERENCE}"], [$offeredItems->getCount(), $offeredItems->getName(), $offeredItems->getCount() - $total], $this->plugin->getConfig()->getNested("messages.sell.not-enough-items")));
+                        $player->sendMessage($this->plugin->getMessage("sell.not-enough-items", ["{COUNT}" => $offeredItems->getCount(), "{ITEM}" => $offeredItems->getName(), "{DIFFERENCE}" => $offeredItems->getCount() - $total]));
                         return;
                     }
                     $player->getInventory()->removeItem($offeredItems);
                     $this->plugin->getEconomyProvider()->giveMoney($player, $item->getSellPrice() * (int)$data[1]);
-                    $player->sendMessage(str_replace(["{COUNT}", "{ITEM}", "{PRICE}"], [$offeredItems->getCount(), $offeredItems->getName(), $item->getSellPrice() * (int)$data[1]], $this->plugin->getConfig()->getNested("messages.sell.sell-success")));
+                    $player->sendMessage($this->plugin->getMessage("sell.sell-success", ["{COUNT}" => $offeredItems->getCount(), "{ITEM}" => $offeredItems->getName(), "{PRICE}" => $item->getSellPrice() * (int)$data[1]]));
                 }
             }
             $this->showCategoryItems($player, $category);
         });
-        $form->setTitle(str_replace(["{COUNT}", "{ITEM}"], [$item->getItem()->getCount(), $item->getItem()->getName()], $this->plugin->getConfig()->getNested("messages.menu.item-page-title")));
+        $form->setTitle($this->plugin->getMessage("menu.item.page-title", ["{COUNT}" => $item->getItem()->getCount(), "{ITEM}" => $item->getItem()->getName()]));
         $form->addLabel(
             (empty($item->getDescription()) ? "" : $item->getDescription() . "\n\n") .
-            (str_replace(["{BALANCE}", "{OWNED}"], [$this->plugin->getEconomyProvider()->getMoney($player), array_sum(array_map(function (Item $item): int {
+            ($this->plugin->getMessage("menu.player-info", ["{BALANCE}" => $this->plugin->getEconomyProvider()->getMoney($player), "{OWNED}" => array_sum(array_map(function (Item $item): int {
                 return $item->getCount();
-            }, $player->getInventory()->all($item->getItem())))], $this->plugin->getConfig()->getNested("messages.menu.player-info", ""))) . "\n" .
-            (str_replace("{PRICE}", (string)$item->getBuyPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-purchase-price"))) . "\n" .
-            ($item->canSell() ? (str_replace("{PRICE}", (string)$item->getSellPrice(), $this->plugin->getConfig()->getNested("messages.menu.item-sell-price"))) : "")
+            }, $player->getInventory()->all($item->getItem())))])) . "\n" .
+            ($this->plugin->getMessage("menu.item.purchase-price", ["{PRICE}" => (string)$item->getBuyPrice()]) . "\n" .
+            ($item->canSell() ? ($this->plugin->getMessage("menu.item.sell-price", ["{PRICE}" => (string)$item->getSellPrice()])) : ""))
         );
         $form->addInput("Amount");
         if ($item->canSell()) $form->addToggle("Sell", false);

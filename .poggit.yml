@@ -1,16 +1,18 @@
 --- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/DaPigGuy/PiggyShopUI
 branches:
   - master
+  - pmmp-4.0.0
 projects:
   PiggyShopUI:
     path: ""
     libs:
-      - src: jojoe77777/FormAPI/libFormAPI
+      - src: DaPigGuy/FormAPI-4.0.0/libFormAPI
         version: ^1.3
-      - src: ParoxityTeam/Commando/Commando
+      - src: DaPigGuy/Commando-4.0.0/Commando
         version: ^2.1.0
       - src: DaPigGuy/libPiggyEconomy/libPiggyEconomy
         version: ^2.0.0
+        branch: "pmmp-4.0.0"
     lint:
       phpstan: false
 ...

@@ -129,22 +129,22 @@ class PiggyShopUI extends PluginBase
             ItemIds::DYE => ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"],
             ItemIds::TERRACOTTA => ["White", "Orange", "Magenta", "Light Blue", "Yellow", "Lime", "Pink", "Gray", "Light Gray", "Cyan", "Purple", "Blue", "Brown", "Green", "Red", "Black"]
         ];
-        if (isset($types[$item->getId()][$item->getDamage()])) {
-            $type = $types[$item->getId()][$item->getDamage()];
+        if (isset($types[$item->getId()][$item->getMeta()])) {
+            $type = $types[$item->getId()][$item->getMeta()];
             switch ($item->getId()) {
                 case ItemIds::BANNER:
                     return $type . " Banner";
                 case ItemIds::BUCKET:
-                    if ($item->getDamage() === 0) {
+                    if ($item->getMeta() === 0) {
                         return $type;
-                    } elseif ($item->getDamage() <= 5) {
+                    } elseif ($item->getMeta() <= 5) {
                         return "Bucket of " . $type;
-                    } elseif ($item->getDamage() === 8 || $item->getDamage() === 10) {
+                    } elseif ($item->getMeta() === 8 || $item->getMeta() === 10) {
                         return $type . " Bucket";
                     }
                     break;
                 case ItemIds::DYE:
-                    return $item->getDamage() === 15 ? $type : $type . " Dye";
+                    return $item->getMeta() === 15 ? $type : $type . " Dye";
                 case ItemIds::TERRACOTTA:
                     return $type . " Terracotta";
             }
@@ -152,10 +152,10 @@ class PiggyShopUI extends PluginBase
 
         $potions = ["Water", "Mundane", "Long Mundane", "Thick", "Awkward", "Night Vision", "Night Vision", "Invisibility", "Invisibility", "Leaping", "Leaping", "Leaping", "Fire Resistance", "Fire Resistance", "Swiftness", "Swiftness", "Swiftness", "Slowness", "Slowness", "Water Breathing", "Water Breathing", "Healing", "Healing", "Harming", "Harming", "Poison", "Poison", "Regeneration", "Regeneration", "Regeneration", "Strength", "Strength", "Strength", "Weakness", "Weakness", "Wither"];
         if ($item->getId() === ItemIds::POTION || $item->getId() === ItemIds::SPLASH_POTION) {
-            if ($item->getDamage() <= 4) {
-                return $potions[$item->getDamage()] . ($item->getId() === ItemIds::SPLASH_POTION ? " Splash" : "") . " Potion";
+            if ($item->getMeta() <= 4) {
+                return $potions[$item->getMeta()] . ($item->getId() === ItemIds::SPLASH_POTION ? " Splash" : "") . " Potion";
             } else {
-                return ($item->getId() === ItemIds::SPLASH_POTION ? " Splash " : "") . "Potion of " . $potions[$item->getDamage()];
+                return ($item->getId() === ItemIds::SPLASH_POTION ? " Splash " : "") . "Potion of " . $potions[$item->getMeta()];
             }
         }
 

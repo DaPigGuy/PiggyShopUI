@@ -93,7 +93,7 @@ class EditSubCommand extends BaseSubCommand
         });
         $form->setTitle("Edit Shop Categories");
         foreach ($categories as $category) {
-            $form->addButton($category->getName());
+            $form->addButton($category->getName(), $category->getImageType(), $category->getImagePath());
         }
         $form->addButton("Back");
         $player->sendForm($form);
@@ -195,7 +195,7 @@ class EditSubCommand extends BaseSubCommand
         });
         $form->setTitle("Edit '" . $category->getName() . "' Category Items");
         foreach ($items as $item) {
-            $form->addButton($item->getItem()->getName());
+            $form->addButton($item->getItem()->getName(), $item->getImageType(), $item->getImagePath());
         }
         $form->addButton("Back");
         $player->sendForm($form);
@@ -289,7 +289,7 @@ class EditSubCommand extends BaseSubCommand
         });
         $form->setTitle("Edit '" . $category->getName() . "' Category Subcategories");
         foreach ($subcategories as $subcategory) {
-            $form->addButton($subcategory->getName());
+            $form->addButton($subcategory->getName(), $subcategory->getImageType(), $subcategory->getImagePath());
         }
         $form->addButton("Back");
         $player->sendForm($form);

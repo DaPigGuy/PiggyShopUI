@@ -24,4 +24,7 @@ permissions:
                 description: "Allow usage of the /shop edit subcommand"
               piggyshopui.command.shop.use:
                 default: true
-                description: "Allow usage of the /shop command"
+                description: "Allow usage of the /shop command" 
+              piggyshopui.category.:
+                default: true
+                description: "use categorys?"

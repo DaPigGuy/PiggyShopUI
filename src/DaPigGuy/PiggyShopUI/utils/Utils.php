@@ -11,7 +11,7 @@ class Utils
 {
     private static array $replacements;
 
-    public static function init() {
+    public static function init(): void {
         foreach ((new ReflectionClass(TextFormat::class))->getConstants() as $color => $code) {
             if (is_string($code)) self::$replacements["{" . $color . "}"] = $code;
         }

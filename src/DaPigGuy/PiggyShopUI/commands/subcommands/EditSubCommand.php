@@ -346,7 +346,6 @@ class EditSubCommand extends BaseSubCommand
 
     public function showRemoveCategoryPage(Player $player): void
     {
-        /** @var ShopCategory[] $categories */
         $categories = array_values($this->plugin->getShopCategories());
         $form = new CustomForm(function (Player $player, ?array $data) use ($categories): void {
             if ($data !== null) {

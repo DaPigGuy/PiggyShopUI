@@ -11,19 +11,15 @@ use pocketmine\permission\PermissionManager;
 
 class ShopCategory
 {
-    /** @var string */
-    public $name;
+    public string $name;
     /** @var ShopItem[] */
-    public $items;
+    public array $items;
     /** @var ShopSubcategory[] */
-    public $subcategories;
-    /** @var bool */
-    public $private;
+    public array $subcategories;
+    public bool $private;
 
-    /** @var int */
-    public $imageType;
-    /** @var string */
-    public $imagePath;
+    public int $imageType;
+    public string $imagePath;
 
     final public function __construct(string $name, array $items, array $subcategories, bool $private, int $imageType, string $imagePath)
     {

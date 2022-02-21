@@ -12,7 +12,7 @@ PiggyShopUI is an open-sourced plugin using [libFormAPI](https://github.com/jojo
 
 ## Installation & Setup
 1. Install the plugin from Poggit.
-2. (Optional) Setup your economy provider. If using EconomyAPI, this step can be skipped. Otherwise, change `economy.provider` to the name of the economy plugin being used, or `xp` for PMMP Player EXP. If using MultiEconomy, create `economy.multieconomy-currency` with the value being your preferred currency type.
+2. (Optional) Setup your economy provider. If using EconomyAPI, this step can be skipped. Otherwise, change `economy.provider` to the name of the economy plugin being used, or `xp` for PMMP Player EXP.
 3. Start your server.
 4. The command `/shop edit` opens up the shop editor menu. Run it.
 5. PiggyShopUI separates individual shop entries by categories. Create a category.

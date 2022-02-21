@@ -11,8 +11,7 @@ projects:
       - src: DaPigGuy/Commando-4.0.0/Commando
         version: ^2.1.0
       - src: DaPigGuy/libPiggyEconomy/libPiggyEconomy
-        version: ^2.0.0
-        branch: "pmmp-4.0.0"
+        version: ^3.0.0
     lint:
       phpstan: false
 ...

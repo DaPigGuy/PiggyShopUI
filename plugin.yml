@@ -1,12 +1,11 @@
 name: PiggyShopUI
 main: DaPigGuy\PiggyShopUI\PiggyShopUI
-version: 2.1.1
-api: 4.0.0
+version: 3.0.0
+api: 4.2.0
 load: POSTWORLD
 author: DaPigGuy
-softdepend: ["EconomyAPI", "MultiEconomy"]
+softdepend: ["EconomyAPI", "BedrockEconomy"]
 website: "https://github.com/DaPigGuy/PiggyShopUI/"
-
 permissions:
   piggyshopui:
     default: false
@@ -24,5 +23,5 @@ permissions:
     default: true
     description: "Allow usage of the /shop command" 
   piggyshopui.category.:
-    default: true
-    description: "use categorys?"
+    default: op
+    description: "Allows access to all shop categories"

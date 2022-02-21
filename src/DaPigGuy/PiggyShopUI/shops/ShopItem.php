@@ -9,21 +9,14 @@ use pocketmine\item\Item;
 
 class ShopItem
 {
-    /** @var Item */
-    public $item;
-    /** @var string */
-    private $description;
-    /** @var float */
-    public $buyPrice;
-    /** @var bool */
-    public $canSell;
-    /** @var float */
-    public $sellPrice;
+    public Item $item;
+    private string $description;
+    public float $buyPrice;
+    public bool $canSell;
+    public float $sellPrice;
 
-    /** @var int */
-    public $imageType;
-    /** @var string */
-    public $imagePath;
+    public int $imageType;
+    public string $imagePath;
 
     public function __construct(Item $item, string $description, float $buyPrice, bool $canSell, float $sellPrice, int $imageType, string $imagePath)
     {

@@ -122,42 +122,10 @@ class PiggyShopUI extends PluginBase
 
     public function getNameByDamage(Item $item): string
     {
-        $types = [
-            ItemIds::BANNER => ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"],
-            ItemIds::BUCKET => ["Bucket", "Milk", "Cod", "Salmon", "Tropical Fish", "Pufferfish", "", "", "Water", "", "Lava"],
-            ItemIds::DYE => ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"],
-            ItemIds::TERRACOTTA => ["White", "Orange", "Magenta", "Light Blue", "Yellow", "Lime", "Pink", "Gray", "Light Gray", "Cyan", "Purple", "Blue", "Brown", "Green", "Red", "Black"]
-        ];
-        if (isset($types[$item->getId()][$item->getMeta()])) {
-            $type = $types[$item->getId()][$item->getMeta()];
-            switch ($item->getId()) {
-                case ItemIds::BANNER:
-                    return $type . " Banner";
-                case ItemIds::BUCKET:
-                    if ($item->getMeta() === 0) {
-                        return $type;
-                    } elseif ($item->getMeta() <= 5) {
-                        return "Bucket of " . $type;
-                    } elseif ($item->getMeta() === 8 || $item->getMeta() === 10) {
-                        return $type . " Bucket";
-                    }
-                    break;
-                case ItemIds::DYE:
-                    return $item->getMeta() === 15 ? $type : $type . " Dye";
-                case ItemIds::TERRACOTTA:
-                    return $type . " Terracotta";
-            }
+        if ($item->getId() === ItemIds::BANNER) {
+            $colors = ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"];
+            return $colors[$item->getMeta()] . " Banner";
         }
-
-        $potions = ["Water", "Mundane", "Long Mundane", "Thick", "Awkward", "Night Vision", "Night Vision", "Invisibility", "Invisibility", "Leaping", "Leaping", "Leaping", "Fire Resistance", "Fire Resistance", "Swiftness", "Swiftness", "Swiftness", "Slowness", "Slowness", "Water Breathing", "Water Breathing", "Healing", "Healing", "Harming", "Harming", "Poison", "Poison", "Regeneration", "Regeneration", "Regeneration", "Strength", "Strength", "Strength", "Weakness", "Weakness", "Wither"];
-        if ($item->getId() === ItemIds::POTION || $item->getId() === ItemIds::SPLASH_POTION) {
-            if ($item->getMeta() <= 4) {
-                return $potions[$item->getMeta()] . ($item->getId() === ItemIds::SPLASH_POTION ? " Splash" : "") . " Potion";
-            } else {
-                return ($item->getId() === ItemIds::SPLASH_POTION ? " Splash " : "") . "Potion of " . $potions[$item->getMeta()];
-            }
-        }
-
         return $item->getName();
     }
 }

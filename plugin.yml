@@ -6,22 +6,23 @@ load: POSTWORLD
 author: DaPigGuy
 softdepend: ["EconomyAPI", "MultiEconomy"]
 website: "https://github.com/DaPigGuy/PiggyShopUI/"
+
 permissions:
   piggyshopui:
     default: false
     description: "Allows usage of all PiggyShopUI features"
-    children:
-      piggyshopui.command:
-        default: op
-        description: "Allow usage of all PiggyShopUI commands"
-        children:
-          piggyshopui.command.shop:
-            default: op
-            description: "Allow usage of the /shop commands"
-            children:
-              piggyshopui.command.shop.edit:
-                default: op
-                description: "Allow usage of the /shop edit subcommand"
-              piggyshopui.command.shop.use:
-                default: true
-                description: "Allow usage of the /shop command"
+  piggyshopui.command:
+    default: op
+    description: "Allow usage of all PiggyShopUI commands"
+  piggyshopui.command.shop:
+    default: op
+    description: "Allow usage of the /shop commands"
+  piggyshopui.command.shop.edit:
+    default: op
+    description: "Allow usage of the /shop edit subcommand"
+  piggyshopui.command.shop.use:
+    default: true
+    description: "Allow usage of the /shop command" 
+  piggyshopui.category.:
+    default: true
+    description: "use categorys?"

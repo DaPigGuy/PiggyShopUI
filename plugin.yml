@@ -24,4 +24,4 @@ permissions:
     description: "Allow usage of the /shop command" 
   piggyshopui.category.:
     default: op
-    description: "Allows access to all shop categories"
+    description: "Allows access to private categories"

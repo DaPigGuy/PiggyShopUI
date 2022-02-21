@@ -11,6 +11,7 @@ use DaPigGuy\PiggyShopUI\shops\ShopCategory;
 use DaPigGuy\PiggyShopUI\tasks\CheckUpdatesTask;
 use DaPigGuy\PiggyShopUI\utils\Utils;
 use jojoe77777\FormAPI\Form;
+use JsonException;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\plugin\PluginBase;
@@ -18,19 +19,15 @@ use pocketmine\utils\Config;
 
 class PiggyShopUI extends PluginBase
 {
-    /** @var PiggyShopUI */
-    public static $instance;
+    public static PiggyShopUI $instance;
 
-    /** @var Config */
-    private $messages;
+    private Config $messages;
 
     /** @var ShopCategory[] */
-    public $shopCategories = [];
-    /** @var Config */
-    public $shopConfig;
+    public array $shopCategories = [];
+    public Config $shopConfig;
 
-    /** @var EconomyProvider */
-    public $economyProvider;
+    public EconomyProvider $economyProvider;
 
     public function onEnable(): void
     {
@@ -49,6 +46,8 @@ class PiggyShopUI extends PluginBase
         }
 
         self::$instance = $this;
+
+        Utils::init();
 
         $this->saveResource("messages.yml");
         $this->messages = new Config($this->getDataFolder() . "messages.yml");

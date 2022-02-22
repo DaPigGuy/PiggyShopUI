@@ -10,6 +10,9 @@ permissions:
   piggyshopui:
     default: false
     description: "Allows usage of all PiggyShopUI features"
+  piggyshopui.category:
+    default: op
+    description: "Allows access to private categories"
   piggyshopui.command:
     default: op
     description: "Allow usage of all PiggyShopUI commands"
@@ -21,7 +24,4 @@ permissions:
     description: "Allow usage of the /shop edit subcommand"
   piggyshopui.command.shop.use:
     default: true
-    description: "Allow usage of the /shop command" 
-  piggyshopui.category.:
-    default: op
-    description: "Allows access to private categories"
+    description: "Allow usage of the /shop command"

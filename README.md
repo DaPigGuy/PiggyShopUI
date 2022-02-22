@@ -40,11 +40,11 @@ PiggyShopUI is an open-sourced plugin using [libFormAPI](https://github.com/jojo
 | Permissions                       | Description                              | Default |
 |-----------------------------------|------------------------------------------|---------|
 | `piggyshopui`                     | Allows usage of all PiggyShopUI features | `false` |
+| `piggyshopui.category.{CATEGORY}` | Allows access to private categories      | `op`    |
 | `piggyshopui.command`             | Allow usage of all PiggyShopUI commands  | `op`    |
 | `piggyshopui.command.shop`        | Allow usage of the /shop commands        | `op`    |
 | `piggyshopui.command.shop.edit`   | Allow usage of the /shop edit subcommand | `op`    |
 | `piggyshopui.command.shop.use`    | Allow usage of the /shop command         | `true`  |
-| `piggyshopui.category.{CATEGORY}` | Allows access to private categories      | `op`    |
 
 ## Issue Reporting
 

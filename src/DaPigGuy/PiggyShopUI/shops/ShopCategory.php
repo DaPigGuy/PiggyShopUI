@@ -118,11 +118,11 @@ class ShopCategory
         }, $this->subcategories), "private" => $this->private, "imageType" => $this->imageType, "imagePath" => $this->imagePath];
     }
 
-    public static function deserialize(array $category): ShopCategory
+    public static function deserialize(array $category): static
     {
         return new static($category["name"], array_map(function (array $item): ShopItem {
             return new ShopItem(Item::jsonDeserialize($item["item"]), $item["description"], $item["buyPrice"], $item["canSell"], $item["sellPrice"], $item["imageType"] ?? -1, $item["imagePath"] ?? "");
-        }, $category["items"]), array_map(function (array $subcategory): ShopCategory {
+        }, $category["items"]), array_map(function (array $subcategory): ShopSubcategory {
             return ShopSubcategory::deserialize($subcategory);
         }, $category["subcategories"] ?? []), $category["private"], $category["imageType"] ?? -1, $category["imagePath"] ?? "");
     }

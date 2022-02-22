@@ -6,8 +6,7 @@ namespace DaPigGuy\PiggyShopUI\shops;
 
 class ShopSubcategory extends ShopCategory
 {
-    /** @var ShopCategory */
-    public $parent;
+    public ShopCategory $parent;
 
     public function getParent(): ShopCategory
     {

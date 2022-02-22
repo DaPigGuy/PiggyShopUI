@@ -1,3 +1,4 @@
+generic-error: "{RED}An unexpected error has occurred."
 command:
   use-in-game: "{RED}Please use this in-game."
 menu:

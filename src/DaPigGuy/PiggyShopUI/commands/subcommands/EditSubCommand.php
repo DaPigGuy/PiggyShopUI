@@ -13,7 +13,7 @@ use jojoe77777\FormAPI\CustomForm;
 use jojoe77777\FormAPI\SimpleForm;
 use pocketmine\command\CommandSender;
 use pocketmine\item\Item;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 
 class EditSubCommand extends BaseSubCommand
@@ -156,7 +156,7 @@ class EditSubCommand extends BaseSubCommand
                     $player->sendMessage(TextFormat::RED . "Prices must be numeric.");
                     return;
                 }
-                $shopItem = new ShopItem($items[$data[0]], $data[2], (float)$data[3], $data[4], (float)$data[6] ?? 0, $data[7] - 1, $data[8]);
+                $shopItem = new ShopItem($items[$data[0]], $data[2], (float)$data[3], $data[4], (float)$data[6] ?: 0, $data[7] - 1, $data[8]);
                 $category->addItem($shopItem);
                 $player->sendMessage(TextFormat::GREEN . "Item successfully added.");
             }
@@ -346,7 +346,6 @@ class EditSubCommand extends BaseSubCommand
 
     public function showRemoveCategoryPage(Player $player): void
     {
-        /** @var ShopCategory[] $categories */
         $categories = array_values($this->plugin->getShopCategories());
         $form = new CustomForm(function (Player $player, ?array $data) use ($categories): void {
             if ($data !== null) {

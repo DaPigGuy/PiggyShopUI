@@ -19,7 +19,4 @@ $RECYCLE.BIN/
 
 # JetBrains IDE
 \.idea
-
-# Floobits
-\.floo
-\.flooignore
+\.dependencies

@@ -2,14 +2,14 @@ parameters:
   paths:
     - /source/src
   level: 8
-  autoload_files:
+  bootstrapFiles:
     - phar:///pocketmine/PocketMine-MP.phar/vendor/autoload.php
-  autoload_directories:
-    - /source/src
+  scanDirectories:
     - phar:///source/vendor/FormAPI.phar/src/
     - phar:///source/vendor/libPiggyEconomy.phar/src/
+    - phar:///source/vendor/libPiggyUpdateChecker.phar/src/
     - phar:///source/vendor/Commando.phar/src/
-  excludes_analyse:
-    - source/vendor
-  reportUnmatchedIgnoredErrors: false
+  excludePaths:
+    analyse:
+     - source/vendor
   checkMissingIterableValueType: false

@@ -9,31 +9,8 @@ use pocketmine\item\Item;
 
 class ShopItem
 {
-    /** @var Item */
-    public $item;
-    /** @var string */
-    private $description;
-    /** @var float */
-    public $buyPrice;
-    /** @var bool */
-    public $canSell;
-    /** @var float */
-    public $sellPrice;
-
-    /** @var int */
-    public $imageType;
-    /** @var string */
-    public $imagePath;
-
-    public function __construct(Item $item, string $description, float $buyPrice, bool $canSell, float $sellPrice, int $imageType, string $imagePath)
+    public function __construct(public Item $item, public string $description, public float $buyPrice, public bool $canSell, public float $sellPrice, public int $imageType, public string $imagePath)
     {
-        $this->item = $item;
-        $this->description = $description;
-        $this->buyPrice = $buyPrice;
-        $this->canSell = $canSell;
-        $this->sellPrice = $sellPrice;
-        $this->imagePath = $imagePath;
-        $this->imageType = $imageType;
     }
 
     public function getItem(): Item

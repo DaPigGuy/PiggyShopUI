@@ -10,23 +10,14 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - name: Create Vendor Directory
+        run: mkdir vendor
+      - name: Download Virion Dependencies
         run: |
-          echo Making directory...
-          mkdir vendor
-          echo Directory made.
-      - name: wget virions, FormAPI
-        uses: wei/wget@v1
-        with:
-          args: -O vendor/FormAPI.phar https://poggit.pmmp.io/r/54589/FormApi_dev-9.phar
-      - name: wget virions, libPiggyEconomy
-        uses: wei/wget@v1
-        with:
-          args: -O vendor/libPiggyEconomy.phar https://poggit.pmmp.io/r/86214/libPiggyEconomy_dev-9.phar
-      - name: wget virions, Commando
-        uses: wei/wget@v1
-        with:
-          args: -O vendor/Commando.phar https://poggit.pmmp.io/r/89644/Commando_dev-13.phar
+          wget -O vendor/FormAPI.phar https://poggit.pmmp.io/r/163460/FormAPI_dev-2.phar
+          wget -O vendor/libPiggyEconomy.phar https://poggit.pmmp.io/r/163250/libPiggyEconomy_dev-12.phar
+          wget -O vendor/Commando.phar https://poggit.pmmp.io/r/162923/Commando_dev-30.phar
+          wget -O vendor/libPiggyUpdateChecker.phar https://poggit.pmmp.io/r/163495/libPiggyUpdateChecker_dev-1.phar
       - name: Run PHPStan
-        uses: nxtlvlsoftware/pmmp-phpstan-action@3
+        uses: paroxity/pmmp-phpstan-action@4.2.0
         with:
           phpstan-config: phpstan.neon.dist

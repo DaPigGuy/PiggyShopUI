@@ -11,35 +11,19 @@ use pocketmine\permission\PermissionManager;
 
 class ShopCategory
 {
-    /** @var string */
-    public $name;
-    /** @var ShopItem[] */
-    public $items;
-    /** @var ShopSubcategory[] */
-    public $subcategories;
-    /** @var bool */
-    public $private;
-
-    /** @var int */
-    public $imageType;
-    /** @var string */
-    public $imagePath;
-
-    final public function __construct(string $name, array $items, array $subcategories, bool $private, int $imageType, string $imagePath)
+    /**
+     * @param ShopItem[] $items
+     * @param ShopSubcategory[] $subcategories
+     */
+    final public function __construct(public string $name, public array $items, public array $subcategories, public bool $private, public int $imageType, public string $imagePath)
     {
-        $this->name = $name;
-        $this->items = $items;
-        $this->subcategories = $subcategories;
-        $this->private = $private;
-        $this->imagePath = $imagePath;
-        $this->imageType = $imageType;
-
         foreach ($this->subcategories as $subcategory) {
             $subcategory->setParent($this);
         }
 
-        $permission = new Permission("piggyshopui.category." . strtolower($name), "Allows usage of the " . $name . " shop category");
-        PermissionManager::getInstance()->addPermission($permission);
+        $childNode = "piggyshopui.category." . strtolower($name);
+        PermissionManager::getInstance()->addPermission(new Permission($childNode, "Allows usage of the " . $name . " shop category"));
+        PermissionManager::getInstance()->getPermission("piggyshopui.category")?->addChild($childNode, true);
     }
 
     public function getName(): string
@@ -135,11 +119,11 @@ class ShopCategory
         }, $this->subcategories), "private" => $this->private, "imageType" => $this->imageType, "imagePath" => $this->imagePath];
     }
 
-    public static function deserialize(array $category): ShopCategory
+    public static function deserialize(array $category): static
     {
         return new static($category["name"], array_map(function (array $item): ShopItem {
             return new ShopItem(Item::jsonDeserialize($item["item"]), $item["description"], $item["buyPrice"], $item["canSell"], $item["sellPrice"], $item["imageType"] ?? -1, $item["imagePath"] ?? "");
-        }, $category["items"]), array_map(function (array $subcategory): ShopCategory {
+        }, $category["items"]), array_map(function (array $subcategory): ShopSubcategory {
             return ShopSubcategory::deserialize($subcategory);
         }, $category["subcategories"] ?? []), $category["private"], $category["imageType"] ?? -1, $category["imagePath"] ?? "");
     }

@@ -11,25 +11,12 @@ use pocketmine\permission\PermissionManager;
 
 class ShopCategory
 {
-    public string $name;
-    /** @var ShopItem[] */
-    public array $items;
-    /** @var ShopSubcategory[] */
-    public array $subcategories;
-    public bool $private;
-
-    public int $imageType;
-    public string $imagePath;
-
-    final public function __construct(string $name, array $items, array $subcategories, bool $private, int $imageType, string $imagePath)
+    /**
+     * @param ShopItem[] $items
+     * @param ShopSubcategory[] $subcategories
+     */
+    final public function __construct(public string $name, public array $items, public array $subcategories, public bool $private, public int $imageType, public string $imagePath)
     {
-        $this->name = $name;
-        $this->items = $items;
-        $this->subcategories = $subcategories;
-        $this->private = $private;
-        $this->imagePath = $imagePath;
-        $this->imageType = $imageType;
-
         foreach ($this->subcategories as $subcategory) {
             $subcategory->setParent($this);
         }

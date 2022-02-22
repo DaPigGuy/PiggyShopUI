@@ -24,9 +24,8 @@ class ShopCategory
         }
 
         $childNode = "piggyshopui.category." . strtolower($name);
-        $permission = new Permission($childNode, "Allows usage of the " . $name . " shop category");
-        PermissionManager::getInstance()->addPermission($permission);
-        PermissionManager::getInstance()->getPermission("piggyshopui.category")->addChild($childNode, true);
+        PermissionManager::getInstance()->addPermission(new Permission($childNode, "Allows usage of the " . $name . " shop category"));
+        PermissionManager::getInstance()->getPermission("piggyshopui.category")?->addChild($childNode, true);
     }
 
     public function getName(): string

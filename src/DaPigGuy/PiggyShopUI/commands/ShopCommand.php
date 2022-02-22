@@ -103,71 +103,71 @@ class ShopCommand extends BaseCommand
 
     public function showItemPage(Player $player, ShopCategory $category, ShopItem $item): void
     {
-        $form = new CustomForm(function (Player $player, ?array $data) use ($category, $item): void {
-            if ($data !== null) {
-                if (!is_numeric($data[1]) || (int)$data[1] < 0) {
-                    $player->sendMessage($this->plugin->getMessage("menu.item.numeric"));
-                    return;
-                }
-                if (!$item->canSell() || !$data[2]) {
-                    $this->plugin->getEconomyProvider()->getMoney($player, function (float|int $amount) use ($player, $data, $item): void {
-                        if ($amount < $item->getBuyPrice() * (int)$data[1]) {
-                            $player->sendMessage($this->plugin->getMessage("buy.not-enough-money", ["{PRICE}" => $item->getBuyPrice() * (int)$data[1], "{DIFFERENCE}" => $item->getBuyPrice() * (int)$data[1] - $amount]));
+        $this->plugin->getEconomyProvider()->getMoney($player, function (float|int $amount) use ($player, $category, $item): void {
+            $form = new CustomForm(function (Player $player, ?array $data) use ($category, $item): void {
+                if ($data !== null) {
+                    if (!is_numeric($data[1]) || (int)$data[1] < 0) {
+                        $player->sendMessage($this->plugin->getMessage("menu.item.numeric"));
+                        return;
+                    }
+                    if (!$item->canSell() || !$data[2]) {
+                        $this->plugin->getEconomyProvider()->getMoney($player, function (float|int $amount) use ($player, $data, $item): void {
+                            if ($amount < $item->getBuyPrice() * (int)$data[1]) {
+                                $player->sendMessage($this->plugin->getMessage("buy.not-enough-money", ["{PRICE}" => $item->getBuyPrice() * (int)$data[1], "{DIFFERENCE}" => $item->getBuyPrice() * (int)$data[1] - $amount]));
+                                return;
+                            }
+                            $purchasedItem = clone $item->getItem();
+                            $purchasedItem->setCount($purchasedItem->getCount() * (int)$data[1]);
+                            if (!$player->getInventory()->canAddItem($purchasedItem)) {
+                                $player->sendMessage($this->plugin->getMessage("buy.not-enough-space"));
+                                return;
+                            }
+                            $this->plugin->getEconomyProvider()->takeMoney($player, $item->getBuyPrice() * (int)$data[1], function (bool $success) use ($data, $item, $purchasedItem, $player): void {
+                                if (!$success) {
+                                    $player->sendMessage($this->plugin->getMessage("generic-error"));
+                                    return;
+                                }
+                                $player->getInventory()->addItem($purchasedItem);
+                                $player->sendMessage($this->plugin->getMessage("buy.buy-success", ["{COUNT}" => $purchasedItem->getCount(), "{ITEM}" => $purchasedItem->getName(), "{PRICE}" => $item->getBuyPrice() * (int)$data[1]]));
+                            });
+                        });
+                    } else {
+                        $offeredItems = clone $item->getItem();
+                        $offeredItems->setCount($offeredItems->getCount() * (int)$data[1]);
+                        if (!$player->getInventory()->contains($offeredItems)) {
+                            $total = 0;
+                            /** @var Item $i */
+                            foreach ($player->getInventory()->all($offeredItems) as $i) {
+                                $total += $i->getCount();
+                            }
+                            $player->sendMessage($this->plugin->getMessage("sell.not-enough-items", ["{COUNT}" => $offeredItems->getCount(), "{ITEM}" => $offeredItems->getName(), "{DIFFERENCE}" => $offeredItems->getCount() - $total]));
                             return;
                         }
-                        $purchasedItem = clone $item->getItem();
-                        $purchasedItem->setCount($purchasedItem->getCount() * (int)$data[1]);
-                        if (!$player->getInventory()->canAddItem($purchasedItem)) {
-                            $player->sendMessage($this->plugin->getMessage("buy.not-enough-space"));
-                            return;
-                        }
-                        $player->getInventory()->addItem($purchasedItem);
-                        $this->plugin->getEconomyProvider()->takeMoney($player, $item->getBuyPrice() * (int)$data[1], function (bool $success) use ($data, $item, $purchasedItem, $player):void{
+                        $this->plugin->getEconomyProvider()->giveMoney($player, $item->getSellPrice() * (int)$data[1], function (bool $success) use ($data, $item, $offeredItems, $player): void {
                             if (!$success) {
                                 $player->sendMessage($this->plugin->getMessage("generic-error"));
                                 return;
                             }
-                            $player->sendMessage($this->plugin->getMessage("buy.buy-success", ["{COUNT}" => $purchasedItem->getCount(), "{ITEM}" => $purchasedItem->getName(), "{PRICE}" => $item->getBuyPrice() * (int)$data[1]]));
+                            $player->getInventory()->removeItem($offeredItems);
+                            $player->sendMessage($this->plugin->getMessage("sell.sell-success", ["{COUNT}" => $offeredItems->getCount(), "{ITEM}" => $offeredItems->getName(), "{PRICE}" => $item->getSellPrice() * (int)$data[1]]));
                         });
-                    });
-                } else {
-                    $offeredItems = clone $item->getItem();
-                    $offeredItems->setCount($offeredItems->getCount() * (int)$data[1]);
-                    if (!$player->getInventory()->contains($offeredItems)) {
-                        $total = 0;
-                        /** @var Item $i */
-                        foreach ($player->getInventory()->all($offeredItems) as $i) {
-                            $total += $i->getCount();
-                        }
-                        $player->sendMessage($this->plugin->getMessage("sell.not-enough-items", ["{COUNT}" => $offeredItems->getCount(), "{ITEM}" => $offeredItems->getName(), "{DIFFERENCE}" => $offeredItems->getCount() - $total]));
-                        return;
                     }
-                    $player->getInventory()->removeItem($offeredItems);
-                    $this->plugin->getEconomyProvider()->giveMoney($player, $item->getSellPrice() * (int)$data[1], function (bool $success) use ($data, $item, $offeredItems, $player):void {
-                        if (!$success) {
-                            $player->sendMessage($this->plugin->getMessage("generic-error"));
-                            return;
-                        }
-                        $player->sendMessage($this->plugin->getMessage("sell.sell-success", ["{COUNT}" => $offeredItems->getCount(), "{ITEM}" => $offeredItems->getName(), "{PRICE}" => $item->getSellPrice() * (int)$data[1]]));
-                    });
                 }
-            }
-            $this->showCategoryItems($player, $category);
+                $this->showCategoryItems($player, $category);
+            });
+            $form->setTitle($this->plugin->getMessage("menu.item.page-title", ["{COUNT}" => $item->getItem()->getCount(), "{ITEM}" => $item->getItem()->getName()]));
+            $form->addLabel(
+                (empty($item->getDescription()) ? "" : $item->getDescription() . "\n\n") .
+                ($this->plugin->getMessage("menu.player-info", ["{BALANCE}" => $amount, "{OWNED}" => array_sum(array_map(function (Item $item): int {
+                    return $item->getCount();
+                }, $player->getInventory()->all($item->getItem())))])) . "\n" .
+                ($this->plugin->getMessage("menu.item.purchase-price", ["{PRICE}" => (string)$item->getBuyPrice()]) . "\n" .
+                    ($item->canSell() ? ($this->plugin->getMessage("menu.item.sell-price", ["{PRICE}" => (string)$item->getSellPrice()])) : ""))
+            );
+            $form->addInput("Amount");
+            if ($item->canSell()) $form->addToggle("Sell", false);
+            $player->sendForm($form);
         });
-        $form->setTitle($this->plugin->getMessage("menu.item.page-title", ["{COUNT}" => $item->getItem()->getCount(), "{ITEM}" => $item->getItem()->getName()]));
-       $this->plugin->getEconomyProvider()->getMoney($player, function (float|int $amount) use ($player, $item, $form): void {
-           $form->addLabel(
-               (empty($item->getDescription()) ? "" : $item->getDescription() . "\n\n") .
-               ($this->plugin->getMessage("menu.player-info", ["{BALANCE}" => $amount, "{OWNED}" => array_sum(array_map(function (Item $item): int {
-                   return $item->getCount();
-               }, $player->getInventory()->all($item->getItem())))])) . "\n" .
-               ($this->plugin->getMessage("menu.item.purchase-price", ["{PRICE}" => (string)$item->getBuyPrice()]) . "\n" .
-                   ($item->canSell() ? ($this->plugin->getMessage("menu.item.sell-price", ["{PRICE}" => (string)$item->getSellPrice()])) : ""))
-           );
-       });
-        $form->addInput("Amount");
-        if ($item->canSell()) $form->addToggle("Sell", false);
-        $player->sendForm($form);
     }
 
     protected function prepare(): void

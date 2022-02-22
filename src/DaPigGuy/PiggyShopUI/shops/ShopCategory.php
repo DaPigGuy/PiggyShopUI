@@ -6,10 +6,8 @@ namespace DaPigGuy\PiggyShopUI\shops;
 
 use DaPigGuy\PiggyShopUI\PiggyShopUI;
 use pocketmine\item\Item;
-use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionManager;
-use pocketmine\permission\PermissionParser;
 
 class ShopCategory
 {

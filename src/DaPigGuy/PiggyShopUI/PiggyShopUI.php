@@ -6,12 +6,11 @@ use CortexPE\Commando\BaseCommand;
 use CortexPE\Commando\PacketHooker;
 use DaPigGuy\libPiggyEconomy\libPiggyEconomy;
 use DaPigGuy\libPiggyEconomy\providers\EconomyProvider;
+use DaPigGuy\libPiggyUpdateChecker\libPiggyUpdateChecker;
 use DaPigGuy\PiggyShopUI\commands\ShopCommand;
 use DaPigGuy\PiggyShopUI\shops\ShopCategory;
-use DaPigGuy\PiggyShopUI\tasks\CheckUpdatesTask;
 use DaPigGuy\PiggyShopUI\utils\Utils;
 use jojoe77777\FormAPI\Form;
-use JsonException;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\plugin\PluginBase;
@@ -47,6 +46,8 @@ class PiggyShopUI extends PluginBase
 
         self::$instance = $this;
 
+        libPiggyUpdateChecker::init($this);
+
         Utils::init();
 
         $this->saveResource("messages.yml");
@@ -63,8 +64,6 @@ class PiggyShopUI extends PluginBase
 
         if (!PacketHooker::isRegistered()) PacketHooker::register($this);
         $this->getServer()->getCommandMap()->register("piggyshopui", new ShopCommand($this, "shop", "Open the shop menu"));
-
-        $this->getServer()->getAsyncPool()->submitTask(new CheckUpdatesTask());
     }
 
     public static function getInstance(): PiggyShopUI

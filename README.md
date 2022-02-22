@@ -62,14 +62,6 @@ PiggyShopUI is an open-sourced plugin using [libFormAPI](https://github.com/jojo
 * We do not support any spoons of PocketMine-MP. Anything to do with spoons (Issues or PRs) will be ignored.
     * This includes plugins that modify PocketMine-MP's behavior directly, such as TeaSpoon.
 
-## Additional Information
-
-* We do not support any spoons. Anything to do with spoons (Issues or PRs) will be ignored.
-* We are using the following virions: [Commando](https://github.com/CortexPE/Commando)
-  , [libFormAPI](https://github.com/jojoe77777/FormAPI),
-  and [libPiggyEconomy](https://github.com/DaPigGuy/libPiggyEconomy).
-* Check out our [Discord Server](https://discord.gg/qmnDsSD) for additional plugin support.
-
 ## License
 
 ```

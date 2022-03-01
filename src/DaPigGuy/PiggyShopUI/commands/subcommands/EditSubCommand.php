@@ -152,11 +152,15 @@ class EditSubCommand extends BaseSubCommand
         $items = array_values($player->getInventory()->getContents());
         $form = new CustomForm(function (Player $player, ?array $data) use ($items, $category): void {
             if ($data !== null) {
-                if (!is_numeric($data[3]) || !is_numeric($data[6])) {
+                if (!is_numeric($data[5]) || !is_numeric($data[8])) {
                     $player->sendMessage(TextFormat::RED . "Prices must be numeric.");
                     return;
                 }
-                $shopItem = new ShopItem($items[$data[0]], $data[2], (float)$data[3], $data[4], (float)$data[6] ?: 0, $data[7] - 1, $data[8]);
+                if (!$data[3] && !$data[6]) {
+                    $player->sendMessage(TextFormat::RED . "Item must not be both unpurchasable and unsellable.");
+                    return;
+                }
+                $shopItem = new ShopItem($items[$data[0]], $data[2], $data[3], (float)$data[5], $data[6], (float)$data[8] ?: 0, $data[9] - 1, $data[10]);
                 $category->addItem($shopItem);
                 $player->sendMessage(TextFormat::GREEN . "Item successfully added.");
             }
@@ -168,6 +172,8 @@ class EditSubCommand extends BaseSubCommand
         }, $items));
         $form->addLabel("Item descriptions are optional.");
         $form->addInput("Description");
+        $form->addToggle("Can Buy", true);
+        $form->addLabel("Do not change 'Buy Price' if 'Can Buy' is disabled.");
         $form->addInput("Buy Price");
         $form->addToggle("Can Sell", false);
         $form->addLabel("Do not change 'Sell Price' if 'Can Sell' is disabled.");
@@ -205,22 +211,28 @@ class EditSubCommand extends BaseSubCommand
     {
         $form = new CustomForm(function (Player $player, ?array $data) use ($category, $item): void {
             if ($data !== null) {
-                if (!is_numeric($data[1]) || !is_numeric($data[3])) {
+                if (!is_numeric($data[2]) || !is_numeric($data[4])) {
                     $player->sendMessage(TextFormat::RED . "Prices must be numeric.");
                     return;
                 }
+                if (!$data[1] && !$data[3]) {
+                    $player->sendMessage(TextFormat::RED . "Item must not be both unpurchasable and unsellable.");
+                    return;
+                }
                 $item->setDescription($data[0]);
-                $item->setBuyPrice((float)$data[1]);
-                $item->setCanSell($data[2]);
-                $item->setSellPrice((float)$data[3]);
-                $item->setImageType($data[4] - 1);
-                $item->setImagePath($data[5]);
+                $item->setCanBuy($data[1]);
+                $item->setBuyPrice((float)$data[2]);
+                $item->setCanSell($data[3]);
+                $item->setSellPrice((float)$data[4]);
+                $item->setImageType($data[5] - 1);
+                $item->setImagePath($data[6]);
                 $player->sendMessage(TextFormat::GREEN . "Item updated successfully.");
             }
             $this->showEditCategoryPage($player, $category);
         });
         $form->setTitle("Edit Item '" . $item->getItem()->getName() . "'");
         $form->addInput("Description", "", $item->getDescription());
+        $form->addToggle("Can Buy", $item->canBuy());
         $form->addInput("Buy Price", "", (string)$item->getBuyPrice());
         $form->addToggle("Can Sell", $item->canSell());
         $form->addInput("Sell Price", "", (string)$item->getSellPrice());

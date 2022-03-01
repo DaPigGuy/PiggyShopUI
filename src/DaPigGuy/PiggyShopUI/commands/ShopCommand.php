@@ -110,7 +110,8 @@ class ShopCommand extends BaseCommand
                         $player->sendMessage($this->plugin->getMessage("menu.item.numeric"));
                         return;
                     }
-                    if (!$item->canSell() || !$data[2]) {
+                    $buying = !$item->canSell() || ($item->canBuy() && !$data[2]);
+                    if ($buying) {
                         $this->plugin->getEconomyProvider()->getMoney($player, function (float|int $amount) use ($player, $data, $item): void {
                             if ($amount < $item->getBuyPrice() * (int)$data[1]) {
                                 $player->sendMessage($this->plugin->getMessage("buy.not-enough-money", ["{PRICE}" => $item->getBuyPrice() * (int)$data[1], "{DIFFERENCE}" => $item->getBuyPrice() * (int)$data[1] - $amount]));
@@ -161,11 +162,11 @@ class ShopCommand extends BaseCommand
                 ($this->plugin->getMessage("menu.player-info", ["{BALANCE}" => $amount, "{OWNED}" => array_sum(array_map(function (Item $item): int {
                     return $item->getCount();
                 }, $player->getInventory()->all($item->getItem())))])) . "\n" .
-                ($this->plugin->getMessage("menu.item.purchase-price", ["{PRICE}" => (string)$item->getBuyPrice()]) . "\n" .
+                (($item->canBuy() ? $this->plugin->getMessage("menu.item.purchase-price", ["{PRICE}" => (string)$item->getBuyPrice()]) : "") . "\n" .
                     ($item->canSell() ? ($this->plugin->getMessage("menu.item.sell-price", ["{PRICE}" => (string)$item->getSellPrice()])) : ""))
             );
             $form->addInput("Amount");
-            if ($item->canSell()) $form->addToggle("Sell", false);
+            if ($item->canBuy() && $item->canSell()) $form->addToggle("Sell", false);
             $player->sendForm($form);
         });
     }

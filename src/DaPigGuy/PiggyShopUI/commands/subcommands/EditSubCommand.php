@@ -174,7 +174,7 @@ class EditSubCommand extends BaseSubCommand
         $form->addInput("Description");
         $form->addToggle("Can Buy", true);
         $form->addLabel("Do not change 'Buy Price' if 'Can Buy' is disabled.");
-        $form->addInput("Buy Price");
+        $form->addInput("Buy Price", "", "0");
         $form->addToggle("Can Sell", false);
         $form->addLabel("Do not change 'Sell Price' if 'Can Sell' is disabled.");
         $form->addInput("Sell Price", "", "0");

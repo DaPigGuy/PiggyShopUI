@@ -32,9 +32,10 @@ class PiggyShopUI extends PluginBase
     {
         foreach (
             [
-                "libPiggyEconomy" => libPiggyEconomy::class,
                 "Commando" => BaseCommand::class,
-                "libformapi" => Form::class
+                "libformapi" => Form::class,
+                "libPiggyEconomy" => libPiggyEconomy::class,
+                "libPiggyUpdateChecker" => libPiggyUpdateChecker::class
             ] as $virion => $class
         ) {
             if (!class_exists($class)) {

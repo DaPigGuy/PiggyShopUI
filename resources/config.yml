@@ -1,2 +1,2 @@
 economy:
-  provider: EconomyS
+  provider: bedrockeconomy

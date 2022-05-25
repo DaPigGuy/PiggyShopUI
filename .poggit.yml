@@ -1,7 +1,6 @@
 --- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/DaPigGuy/PiggyShopUI
 branches:
   - master
-  - pmmp-4.0.0
 projects:
   PiggyShopUI:
     path: ""
@@ -11,7 +10,7 @@ projects:
       - src: Paroxity/Commando/Commando
         version: ^3.0.0
       - src: DaPigGuy/libPiggyEconomy/libPiggyEconomy
-        version: ^3.0.0
+        version: ^3.0.1
       - src: DaPigGuy/libPiggyUpdateChecker/libPiggyUpdateChecker
         version: ^1.0.0
     lint:

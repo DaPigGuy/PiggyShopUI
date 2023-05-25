@@ -1,7 +1,7 @@
 name: PiggyShopUI
 main: DaPigGuy\PiggyShopUI\PiggyShopUI
 version: 3.0.2
-api: 4.2.0
+api: 4.21.0
 load: POSTWORLD
 author: DaPigGuy
 softdepend: ["EconomyAPI", "BedrockEconomy"]

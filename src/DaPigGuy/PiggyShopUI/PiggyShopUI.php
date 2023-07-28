@@ -12,7 +12,7 @@ use DaPigGuy\PiggyShopUI\shops\ShopCategory;
 use DaPigGuy\PiggyShopUI\utils\Utils;
 use jojoe77777\FormAPI\Form;
 use pocketmine\item\Item;
-use pocketmine\item\ItemIds;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 

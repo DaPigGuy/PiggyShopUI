@@ -122,7 +122,7 @@ class PiggyShopUI extends PluginBase
 
     public function getNameByDamage(Item $item): string
     {
-        if ($item->getId() === ItemIds::BANNER) {
+        if ($item->getItemTypeId() === ItemTypeIds::BANNER) {
             $colors = ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"];
             return $colors[$item->getMeta()] . " Banner";
         }

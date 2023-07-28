@@ -12,7 +12,7 @@ use DaPigGuy\PiggyShopUI\shops\ShopCategory;
 use DaPigGuy\PiggyShopUI\utils\Utils;
 use jojoe77777\FormAPI\Form;
 use pocketmine\item\Item;
-use pocketmine\item\ItemIds;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 
@@ -122,7 +122,7 @@ class PiggyShopUI extends PluginBase
 
     public function getNameByDamage(Item $item): string
     {
-        if ($item->getId() === ItemIds::BANNER) {
+        if ($item->getItemTypeId() === ItemTypeIds::BANNER) {
             $colors = ["Black", "Red", "Green", "Brown", "Blue", "Purple", "Cyan", "Light Gray", "Gray", "Pink", "Lime", "Yellow", "Light Blue", "Magenta", "Orange", "White", "Black", "Brown", "Blue", "White"];
             return $colors[$item->getMeta()] . " Banner";
         }

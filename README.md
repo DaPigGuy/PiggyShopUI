@@ -5,7 +5,7 @@ PiggyShopUI is an open-sourced plugin using [libFormAPI](https://github.com/jojo
 ## Prerequisites
 
 * Basic knowledge on how to install plugins from Poggit Releases and/or Poggit CI
-* PMMP 4.21.0+
+* PMMP 5.0.0
 
 ## Supported Economy Providers
 
